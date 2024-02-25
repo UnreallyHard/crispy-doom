@@ -306,7 +306,81 @@ void P_DropWeapon (player_t* player)
 		  weaponinfo[player->readyweapon].downstate);
 }
 
+//
+// Drop player stuff on a ground
+//
+void P_DropPlayerStuff (mobj_t* playerMobj)
+{
+    int pnum;
+    mobj_t*	mo;
+    player_t* player;
 
+    if (!playerMobj->player)
+    {
+        return;
+    }
+
+    player = playerMobj->player;
+
+    for (pnum = 0; pnum < MAXPLAYERS; pnum++)
+    {
+        if (player == &players[pnum])
+            break;
+    }
+
+    mo = P_SpawnMobj (playerMobj->x,playerMobj->y,ONFLOORZ, MT_MISC24);
+    // mo->flags |= MF_PICKUP | MF_SPECIAL | MF_DROPPED;
+    mo->flags |= MF_PICKUP | MF_SPECIAL;
+    mo->info->deadPlayerBackpackNumber = pnum;
+}
+
+//
+// Get other player's stuff
+//
+void P_GetOtherPlayerStuff (player_t* taker, player_t* giver)
+{
+    int	i;
+
+	if (giver->backpack && !taker->backpack)
+	{
+	    for (i=0 ; i<NUMAMMO ; i++)
+        {
+            taker->maxammo[i] *= 2;
+        }
+	    taker->backpack = true;
+        giver->backpack = false;
+	}
+
+    for (i=0; i<NUMCARDS; ++i)
+    {
+        if (giver->cards[i] && !taker->cards[i])
+        {
+            taker->cards[i] = true;
+        }
+        giver->cards[i] = false;
+    }
+
+    for (i=0; i<NUMWEAPONS; ++i)
+    {
+        if (giver->weaponowned[i] && !taker->weaponowned[i])
+        {
+            taker->weaponowned[i] = true;
+        }
+        giver->weaponowned[i] = false;
+    }
+
+    for (i=0; i<NUMAMMO; ++i)
+    {
+	    taker->ammo[i] +=  giver->ammo[i];
+
+        if (taker->ammo[i] > taker->maxammo[i])
+        {
+            taker->ammo[i] = taker->maxammo[i];
+        }
+
+        giver->ammo[i] = 0;
+    }
+}
 
 //
 // A_WeaponReady

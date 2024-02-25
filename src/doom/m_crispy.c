@@ -473,6 +473,42 @@ void M_CrispyToggleDefaultSkill(int choice)
     M_SetDefaultDifficulty();
 }
 
+void M_CrispyToggleAutosave(int choice)
+{
+    if (choice == 0)
+    {
+        crispy->autosaveslot--;
+    }
+    else if (choice == 1)
+    {
+        crispy->autosaveslot++;
+    }
+    else if (choice == 2)
+    {
+        if (numeric_enter)
+        {
+            crispy->autosaveslot = numeric_entry;
+            numeric_enter = false;
+            I_StopTextInput();
+        }
+        else
+        {
+            numeric_enter = true;
+            I_StartTextInput(0, 0, 0, 0);
+            return;
+        }
+    }
+
+    if (crispy->autosaveslot < 1)
+    {
+        crispy->autosaveslot = 0;
+    }
+    else if (crispy->autosaveslot > 64)
+    {
+        crispy->autosaveslot = 64;
+    }
+}
+
 void M_CrispyToggleOverunder(int choice)
 {
     if (!crispy->singleplayer)

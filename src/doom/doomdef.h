@@ -98,7 +98,18 @@ typedef enum
     
 } card_t;
 
-
+//
+// cards to sprites mapping
+//
+// typedef enum
+// {
+//     it_bluecard	    = SPR_BKEY,
+//     it_yellowcard   = SPR_YKEY,
+//     it_redcard	    = SPR_RKEY,
+//     it_blueskull	= SPR_BSKU,
+//     it_yellowskull  = SPR_YSKU,
+//     it_redskull     = SPR_RSKU
+// } cardsSprite;
 
 // The defined weapons,
 //  including a marker indicating

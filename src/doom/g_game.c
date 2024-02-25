@@ -95,6 +95,8 @@ void	G_DoCompleted (void);
 void	G_DoVictory (void); 
 void	G_DoWorldDone (void); 
 void	G_DoSaveGame (void); 
+void    G_AutoSaveGame(void); // [crispy]
+void    G_SavePlayersDataToMemory(void);
  
 // Gamestate the last time G_Ticker was called.
 
@@ -1776,6 +1778,7 @@ boolean		secretexit;
  
 void G_ExitLevel (void) 
 { 
+    // G_AutoSaveGame();
     secretexit = false; 
     G_ClearSavename();
     gameaction = ga_completed; 
@@ -2193,12 +2196,18 @@ void G_WorldDone (void)
 	gameaction = ga_victory;
     }
 } 
- 
+
+//
+// G_DoWorldDone
+// On map done
+// 
 void G_DoWorldDone (void) 
 {        
     gamestate = GS_LEVEL; 
     gamemap = wminfo.next+1; 
     G_DoLoadLevel (); 
+    G_AutoSaveGame();  // [crispy]
+    G_SavePlayersDataToMemory();
     gameaction = ga_nothing; 
     viewactive = true; 
 } 
@@ -2330,6 +2339,124 @@ G_SaveGame
     sendsave = true;
 }
 
+// [crispy] Autosave feature
+void G_AutoSaveGame(void) 
+{
+    int zero_autosaveslot;
+
+    if (crispy->autosaveslot < 1)
+    {
+        return;
+    }
+
+    zero_autosaveslot = crispy->autosaveslot - 1;
+
+    savepage = zero_autosaveslot / (SAVEPAGE_MAX + 1);
+    savegameslot = zero_autosaveslot - (savepage * (SAVEPAGE_MAX + 1));
+
+    M_StringCopy(savedescription, "AutoSave", sizeof(savedescription));
+    sendsave = true;
+}
+
+void G_SavePlayersDataToMemory(void)
+{
+    int	i;
+	player_t *player;
+
+    for (i=0 ; i<MAXPLAYERS ; i++)
+    {
+        if (!playeringame[i])
+            continue;
+
+        player = (&players[i]);
+        player->healthOnLevelStart = player->health;
+        player->armorpointsOnLevelStart = player->armorpoints;
+        player->armortypeOnLevelStart = player->armortype;
+        player->backpackOnLevelStart = player->backpack;
+        player->readyweaponOnLevelStart = player->readyweapon;
+        player->pendingweaponOnLevelStart = player->pendingweapon;
+
+        for (i=0; i<NUMPOWERS; ++i)
+        {
+            player->powersOnLevelStart[i] = player->powers[i];
+        }
+
+        for (i=0; i<NUMCARDS; ++i)
+        {
+            player->cardsOnLevelStart[i] = player->cards[i];
+        }
+
+        for (i=0; i<NUMWEAPONS; ++i)
+        {
+            player->weaponownedOnLevelStart[i] = player->weaponowned[i];
+        }
+
+        for (i=0; i<NUMAMMO; ++i)
+        {
+            player->ammoOnLevelStart[i] = player->ammo[i];
+        }
+
+        for (i=0; i<NUMAMMO; ++i)
+        {
+            player->maxammoOnLevelStart[i] = player->maxammo[i];
+        }
+    }
+}
+
+void G_ReloadLevelAndPlayers(void) 
+{ 
+    int	i;
+	player_t *player;
+
+    // gameaction = ga_loadlevel;
+    // gameaction = ga_newgame;
+	// G_ClearSavename();
+	
+    for (i=0 ; i<MAXPLAYERS ; i++)
+    {
+        if (!playeringame[i])
+        {
+            continue;
+        } 
+        
+        player = &players[i];
+        player->usedown = player->attackdown = true;	// don't do anything immediately 
+        player->playerstate = PST_LIVE;
+
+        player->health = player->healthOnLevelStart;
+        player->armorpoints = player->armorpointsOnLevelStart;
+        player->armortype = player->armortypeOnLevelStart;
+        player->backpack = player->backpackOnLevelStart;
+        player->readyweapon = player->readyweaponOnLevelStart;
+        player->pendingweapon = player->pendingweaponOnLevelStart;
+
+        for (i=0; i<NUMPOWERS; ++i)
+        {
+            player->powers[i] = player->powersOnLevelStart[i];
+        }
+
+        for (i=0; i<NUMCARDS; ++i)
+        {
+            player->cards[i] = player->cardsOnLevelStart[i];
+        }
+
+        for (i=0; i<NUMWEAPONS; ++i)
+        {
+            player->weaponowned[i] = player->weaponownedOnLevelStart[i];
+        }
+
+        for (i=0; i<NUMAMMO; ++i)
+        {
+            player->ammo[i] = player->ammoOnLevelStart[i];
+        }
+
+        for (i=0; i<NUMAMMO; ++i)
+        {
+            player->maxammo[i] = player->maxammoOnLevelStart[i];
+        }
+    }
+} 
+
 void G_DoSaveGame (void) 
 { 
     char *savegame_file;
@@ -2419,7 +2546,7 @@ void G_DoSaveGame (void)
     M_StringCopy(savedescription, "", sizeof(savedescription));
     M_StringCopy(savename, savegame_file, sizeof(savename));
 
-    players[consoleplayer].message = DEH_String(GGSAVED);
+    //players[consoleplayer].message = DEH_String(GGSAVED); //Don't display game saved message
 
     // draw the pattern into the back screen
     R_FillBackScreen ();
@@ -2480,6 +2607,7 @@ void G_DoNewGame (void)
     */
     consoleplayer = 0;
     G_InitNew (d_skill, d_episode, d_map); 
+    G_AutoSaveGame(); // [crispy]
     gameaction = ga_nothing; 
 } 
 
@@ -2699,6 +2827,8 @@ G_InitNew
     }
 
     G_DoLoadLevel ();
+    G_AutoSaveGame();
+    G_SavePlayersDataToMemory();
 }
 
 

@@ -50,6 +50,7 @@
 int	maxammo[NUMAMMO] = {200, 50, 300, 50};
 int	clipammo[NUMAMMO] = {10, 4, 20, 1};
 
+int infightingKills = 0; //monsters infighting kills
 
 //
 // GET STUFF
@@ -191,6 +192,7 @@ P_GiveWeapon
 	
     if (netgame
 	&& (deathmatch!=2)
+    && deathmatch != 0 // Take weapons in CoopSurvival
 	 && !dropped )
     {
 	// leave placed weapons forever on net games
@@ -452,7 +454,7 @@ P_TouchSpecialThing
 	    player->message = DEH_String(GOTBLUECARD);
 	P_GiveCard (player, it_bluecard);
 	sound = sfx_keyup; // [NS] Optional key pickup sound.
-	if (!netgame)
+	if (!netgame || (netgame && deathmatch == 0)) // Take cards in SP and in CoopSurvival
 	    break;
 	return;
 	
@@ -461,7 +463,7 @@ P_TouchSpecialThing
 	    player->message = DEH_String(GOTYELWCARD);
 	P_GiveCard (player, it_yellowcard);
 	sound = sfx_keyup; // [NS] Optional key pickup sound.
-	if (!netgame)
+	if (!netgame || (netgame && deathmatch == 0)) // Take cards in SP and in CoopSurvival
 	    break;
 	return;
 	
@@ -470,7 +472,7 @@ P_TouchSpecialThing
 	    player->message = DEH_String(GOTREDCARD);
 	P_GiveCard (player, it_redcard);
 	sound = sfx_keyup; // [NS] Optional key pickup sound.
-	if (!netgame)
+	if (!netgame || (netgame && deathmatch == 0)) // Take cards in SP and in CoopSurvival
 	    break;
 	return;
 	
@@ -479,7 +481,7 @@ P_TouchSpecialThing
 	    player->message = DEH_String(GOTBLUESKUL);
 	P_GiveCard (player, it_blueskull);
 	sound = sfx_keyup; // [NS] Optional key pickup sound.
-	if (!netgame)
+	if (!netgame || (netgame && deathmatch == 0)) // Take cards in SP and in CoopSurvival
 	    break;
 	return;
 	
@@ -488,7 +490,7 @@ P_TouchSpecialThing
 	    player->message = DEH_String(GOTYELWSKUL);
 	P_GiveCard (player, it_yellowskull);
 	sound = sfx_keyup; // [NS] Optional key pickup sound.
-	if (!netgame)
+	if (!netgame || (netgame && deathmatch == 0)) // Take cards in SP and in CoopSurvival
 	    break;
 	return;
 	
@@ -497,7 +499,7 @@ P_TouchSpecialThing
 	    player->message = DEH_String(GOTREDSKULL);
 	P_GiveCard (player, it_redskull);
 	sound = sfx_keyup; // [NS] Optional key pickup sound.
-	if (!netgame)
+	if (!netgame || (netgame && deathmatch == 0)) // Take cards in SP and in CoopSurvival
 	    break;
 	return;
 	
@@ -634,6 +636,14 @@ P_TouchSpecialThing
 	break;
 	
       case SPR_BPAK:
+      // CoopSurvival PlayerStuff
+      if (netgame && deathmatch == 0 && special->info->deadPlayerBackpackNumber)
+        {
+            P_GetOtherPlayerStuff(player, &players[special->info->deadPlayerBackpackNumber]);
+            sound = sfx_wpnup;
+            player->message = DEH_String(GOTBACKPACK);
+        }
+        break;
 	if (!player->backpack)
 	{
 	    for (i=0 ; i<NUMAMMO ; i++)
@@ -749,11 +759,16 @@ P_KillMobj
 	if (target->player)
 	    source->player->frags[target->player-players]++;
     }
-    else if (!netgame && (target->flags & MF_COUNTKILL) )
+    else if (target->flags & MF_COUNTKILL)
     {
-	// count all monster deaths,
-	// even those caused by other monsters
-	players[0].killcount++;
+        if (!netgame)
+        {
+            // count all monster deaths,
+            // even those caused by other monsters
+            players[0].killcount++;
+        }
+
+        infightingKills++;
     }
     
     if (target->player)
@@ -780,7 +795,11 @@ P_KillMobj
 	    // switch view prior to dying
 	    AM_Stop ();
 	}
-	
+        //if CoopSurvival drop dead player's stuff
+        if (netgame && deathmatch == 0)
+        {
+            P_DropPlayerStuff(target);
+        }
     }
 
     // [crispy] Lost Soul, Pain Elemental and Barrel explosions are translucent

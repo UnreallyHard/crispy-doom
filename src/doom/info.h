@@ -1459,6 +1459,8 @@ typedef struct
     int minmissilechance;
     // [crispy] multiplier for likelihood of a missile attack (generaliz. for various)
     int missilechancemult;
+    // Backpack number with dead player's stuff
+    int deadPlayerBackpackNumber;
 
 } mobjinfo_t;
 

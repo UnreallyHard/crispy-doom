@@ -72,6 +72,7 @@ extern void M_CrispyToggleLeveltime(int choice);
 extern void M_CrispyToggleMouseLook(int choice);
 extern void M_CrispyToggleNeghealth(int choice);
 extern void M_CrispyToggleDefaultSkill(int choice);
+extern void M_CrispyToggleAutosave(int choice);
 extern void M_CrispyToggleOverunder(int choice);
 extern void M_CrispyTogglePitch(int choice);
 extern void M_CrispyTogglePlayerCoords(int choice);

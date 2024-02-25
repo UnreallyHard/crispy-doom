@@ -104,8 +104,28 @@ spriteframe_t	sprtemp[29];
 int		maxframe;
 const char	*spritename;
 
-
-
+const int monstersList[] = 
+{
+    MT_SPIDER, //7 "THE SPIDER MASTERMIND"
+    MT_SHOTGUY, //9 "SHOTGUN GUY"
+    MT_CYBORG, //16 "THE CYBERDEMON"
+    MT_SHADOWS, //58
+    MT_VILE, //64 "ARCH-VILE"
+    MT_CHAINGUY, //65 "HEAVY WEAPON DUDE"
+    MT_UNDEAD, //66 "REVENANT"
+    MT_FATSO, //67 "MANCUBUS"
+    MT_BABY, //68 "ARACHNOTRON"
+    MT_KNIGHT, //69 "HELL KNIGHT"
+    MT_PAIN, //71 "PAIN ELEMENTAL"
+    MT_KEEN, //72
+    MT_WOLFSS, //84
+    MT_TROOP, //3001 "IMP"
+    MT_SERGEANT, //3002 "DEMON"
+    MT_BRUISER, //3003 "BARON OF HELL"
+    MT_POSSESSED, //3004 "ZOMBIEMAN"
+    MT_HEAD, //3005 "CACODEMON"
+    MT_SKULL //3006 "LOST SOUL"
+};
 
 //
 // R_InstallSpriteLump

@@ -117,6 +117,18 @@ typedef struct player_s
     int			ammo[NUMAMMO];
     int			maxammo[NUMAMMO];
 
+    int			    healthOnLevelStart;
+    int			    armorpointsOnLevelStart;
+    int			    armortypeOnLevelStart;
+    int			    powersOnLevelStart[NUMPOWERS + 3];
+    boolean		    cardsOnLevelStart[NUMCARDS];
+    boolean		    backpackOnLevelStart;
+    weapontype_t  	readyweaponOnLevelStart;
+    weapontype_t	pendingweaponOnLevelStart;
+    int             weaponownedOnLevelStart[NUMWEAPONS];
+    int			    ammoOnLevelStart[NUMAMMO];
+    int			    maxammoOnLevelStart[NUMAMMO];
+
     // True if button down last tic.
     int			attackdown;
     int			usedown;
