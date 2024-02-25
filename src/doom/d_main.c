@@ -1545,9 +1545,6 @@ void D_DoomMain (void)
 
     devparm = M_CheckParm ("-devparm");
 
-    noMpPickups = M_CheckParm("-noMpPickups"); // [crispy]
-    noMpThings = M_CheckParm("-noMpThings"); // [crispy]
-
     I_DisplayFPSDots(devparm);
 
     //!

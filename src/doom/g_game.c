@@ -1778,7 +1778,6 @@ boolean		secretexit;
  
 void G_ExitLevel (void) 
 { 
-    // G_AutoSaveGame();
     secretexit = false; 
     G_ClearSavename();
     gameaction = ga_completed; 
