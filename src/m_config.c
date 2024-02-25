@@ -2309,6 +2309,14 @@ static default_t extra_defaults_list[] =
     //!
     // @game doom
     //
+    // Crispy's variable to support autosave on new level load
+    //
+
+    CONFIG_VARIABLE_INT(crispy_autosaveslot),
+
+    //!
+    // @game doom
+    //
     // Show a progress bar when playing back a demo.
     //
 

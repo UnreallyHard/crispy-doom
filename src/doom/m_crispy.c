@@ -25,6 +25,7 @@
 #include "s_sound.h"
 #include "r_defs.h" // [crispy] laserpatch
 #include "r_sky.h" // [crispy] R_InitSkyMap()
+#include "p_saveg.h" // [crispy] M_CrispyToggleAutosave()
 
 #include "m_crispy.h"
 
@@ -471,6 +472,46 @@ void M_CrispyToggleDefaultSkill(int choice)
 {
     ChangeSettingEnum(&crispy->defaultskill, choice, NUM_SKILLS);
     M_SetDefaultDifficulty();
+}
+
+void M_CrispyToggleAutosave(int choice)
+{
+    int max_autosaveslot;
+
+    max_autosaveslot = (SAVEPAGE_MAX + 1) * SAVES_PER_PAGE;
+
+    if (choice == 0)
+    {
+        crispy->autosaveslot--;
+    }
+    else if (choice == 1)
+    {
+        crispy->autosaveslot++;
+    }
+    else if (choice == 2)
+    {
+        if (numeric_enter)
+        {
+            crispy->autosaveslot = numeric_entry;
+            numeric_enter = false;
+            I_StopTextInput();
+        }
+        else
+        {
+            numeric_enter = true;
+            I_StartTextInput(0, 0, 0, 0);
+            return;
+        }
+    }
+
+    if (crispy->autosaveslot < 1)
+    {
+        crispy->autosaveslot = 0;
+    }
+    else if (crispy->autosaveslot > max_autosaveslot)
+    {
+        crispy->autosaveslot = max_autosaveslot;
+    }
 }
 
 void M_CrispyToggleOverunder(int choice)
