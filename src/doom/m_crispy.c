@@ -25,6 +25,7 @@
 #include "s_sound.h"
 #include "r_defs.h" // [crispy] laserpatch
 #include "r_sky.h" // [crispy] R_InitSkyMap()
+#include "p_saveg.h" // [crispy] M_CrispyToggleAutosave()
 
 #include "m_crispy.h"
 
@@ -475,6 +476,10 @@ void M_CrispyToggleDefaultSkill(int choice)
 
 void M_CrispyToggleAutosave(int choice)
 {
+    int max_autosaveslot;
+
+    max_autosaveslot = (SAVEPAGE_MAX + 1) * SAVES_PER_PAGE;
+
     if (choice == 0)
     {
         crispy->autosaveslot--;
@@ -503,9 +508,9 @@ void M_CrispyToggleAutosave(int choice)
     {
         crispy->autosaveslot = 0;
     }
-    else if (crispy->autosaveslot > 64)
+    else if (crispy->autosaveslot > max_autosaveslot)
     {
-        crispy->autosaveslot = 64;
+        crispy->autosaveslot = max_autosaveslot;
     }
 }
 

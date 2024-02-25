@@ -2195,11 +2195,11 @@ void G_WorldDone (void)
 	gameaction = ga_victory;
     }
 } 
-
+ 
 //
 // G_DoWorldDone
 // On map done
-// 
+//  
 void G_DoWorldDone (void) 
 {        
     gamestate = GS_LEVEL; 
@@ -2343,15 +2343,15 @@ void G_AutoSaveGame(void)
 {
     int zero_autosaveslot;
 
-    if (crispy->autosaveslot < 1)
+    if (crispy->autosaveslot < 1 || crispy->autosaveslot > (SAVEPAGE_MAX + 1) * SAVES_PER_PAGE)
     {
         return;
     }
 
     zero_autosaveslot = crispy->autosaveslot - 1;
 
-    savepage = zero_autosaveslot / (SAVEPAGE_MAX + 1);
-    savegameslot = zero_autosaveslot - (savepage * (SAVEPAGE_MAX + 1));
+    savepage = zero_autosaveslot / (SAVES_PER_PAGE);
+    savegameslot = zero_autosaveslot - (savepage * SAVES_PER_PAGE);
 
     M_StringCopy(savedescription, "AutoSave", sizeof(savedescription));
     sendsave = true;
