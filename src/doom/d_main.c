@@ -438,6 +438,7 @@ void D_BindVariables(void)
     M_BindIntVariable("crispy_automapoverlay",  &crispy->automapoverlay);
     M_BindIntVariable("crispy_automaprotate",   &crispy->automaprotate);
     M_BindIntVariable("crispy_automapstats",    &crispy->automapstats);
+    M_BindIntVariable("crispy_autosaveslot",    &crispy->autosaveslot);
     M_BindIntVariable("crispy_bobfactor",       &crispy->bobfactor);
     M_BindIntVariable("crispy_btusetimer",      &crispy->btusetimer);
     M_BindIntVariable("crispy_brightmaps",      &crispy->brightmaps);
@@ -481,7 +482,6 @@ void D_BindVariables(void)
     M_BindIntVariable("crispy_uncapped",        &crispy->uncapped);
     M_BindIntVariable("crispy_vsync",           &crispy->vsync);
     M_BindIntVariable("crispy_widescreen",      &crispy->widescreen);
-    M_BindIntVariable("crispy_autosaveslot",    &crispy->autosaveslot);
 }
 
 //
