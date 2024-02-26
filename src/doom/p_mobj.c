@@ -1027,7 +1027,7 @@ void P_SpawnMapThing (mapthing_t* mthing)
     // check for appropriate skill level
     if (!coop_spawns && !netgame && (mthing->options & 16) )
 	return;
-
+		
     // [crispy] Don't spawn mp-only things in the netgame
     if (netgame && (mthing->options & 16) && mp_things_spawn_type == MP_THINGS_SPAWN_NONE)
     {

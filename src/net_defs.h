@@ -221,7 +221,7 @@ typedef struct
     int num_players;
     int consoleplayer;
     int mp_things_spawn_type; // [crispy]
-    
+
     // Hexen player classes:
 
     int player_classes[NET_MAXPLAYERS];
