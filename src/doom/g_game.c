@@ -2206,7 +2206,7 @@ void G_DoWorldDone (void)
     gamemap = wminfo.next+1; 
     G_DoLoadLevel (); 
     G_AutoSaveGame();  // [crispy]
-    G_SavePlayersDataToMemory();
+    G_SavePlayersDataToMemory(); // [crispy]
     gameaction = ga_nothing; 
     viewactive = true; 
 } 
@@ -2607,6 +2607,7 @@ void G_DoNewGame (void)
     consoleplayer = 0;
     G_InitNew (d_skill, d_episode, d_map); 
     G_AutoSaveGame(); // [crispy]
+    G_SavePlayersDataToMemory();  // [crispy]
     gameaction = ga_nothing; 
 } 
 
@@ -2826,8 +2827,6 @@ G_InitNew
     }
 
     G_DoLoadLevel ();
-    G_AutoSaveGame();
-    G_SavePlayersDataToMemory();
 }
 
 
