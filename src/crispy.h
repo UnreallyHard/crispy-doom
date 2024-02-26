@@ -92,6 +92,7 @@ typedef struct
 	int cleanscreenshot;
 	int demowarp;
 	int fps;
+    int infightingkills;
 
 	boolean flashinghom;
 	boolean fliplevels;

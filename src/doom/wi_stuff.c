@@ -88,6 +88,7 @@
 // NET GAME STUFF
 #define NG_STATSY		50
 #define NG_STATSX		(32 + SHORT(star->width)/2 + 32*!dofrags)
+#define NG_STATSY_SMALL	31 // [crispy]
 
 #define NG_SPACINGX    		64
 
@@ -330,6 +331,7 @@ static int		cnt_secret[MAXPLAYERS];
 static int		cnt_time;
 static int		cnt_par;
 static int		cnt_pause;
+static int      cnt_infightingkills; // [crispy]
 
 // # of commercial levels
 static int		NUMCMAPS = 32;
@@ -1157,7 +1159,7 @@ void WI_initNetgameStats(void)
 	if (!playeringame[i])
 	    continue;
 
-	cnt_kills[i] = cnt_items[i] = cnt_secret[i] = cnt_frags[i] = 0;
+	cnt_kills[i] = cnt_items[i] = cnt_secret[i] = cnt_frags[i] = cnt_infightingkills = 0;
 
 	dofrags += WI_fragSum(i);
     }
@@ -1195,6 +1197,9 @@ void WI_updateNetgameStats(void)
 	    if (dofrags)
 		cnt_frags[i] = WI_fragSum(i);
 	}
+
+    cnt_infightingkills = (infightingkills_count * 100) / wbs->maxkills; // [crispy]
+
 	S_StartSoundOptional(0, sfx_inttot, sfx_barexp); // [NS] Optional inter sounds.
 	ng_state = 10;
     }
@@ -1218,7 +1223,22 @@ void WI_updateNetgameStats(void)
 	    else
 		stillticking = true;
 	}
-	
+
+    // [crispy] Infighting kills
+    if (crispy->infightingkills)
+    {
+        cnt_infightingkills += 2;
+
+        if (cnt_infightingkills >= (infightingkills_count * 100) / wbs->maxkills)
+        {
+            cnt_infightingkills = (infightingkills_count * 100) / wbs->maxkills;
+        } 
+        else 
+        {
+            stillticking = true;
+        }   
+    }
+
 	if (!stillticking)
 	{
 	    S_StartSoundOptional(0, sfx_inttot, sfx_barexp); // [NS] Optional inter sounds.
@@ -1330,6 +1350,8 @@ void WI_drawNetgameStats(void)
     int		x;
     int		y;
     int		pwidth = SHORT(percent->width);
+    int     stats_header_height; // [crispy]
+    int     players_count = 0; // [crispy]
 
     WI_slamBackground();
     
@@ -1338,22 +1360,31 @@ void WI_drawNetgameStats(void)
 
     WI_drawLF();
 
+    // [crispy] Infighting kills
+    if (crispy->infightingkills)
+    {
+        for (i=0 ; i<MAXPLAYERS ; i++)
+        {
+            if (playeringame[i])
+            {
+                players_count++;
+            }
+        }
+    }
+
+    stats_header_height = (crispy->infightingkills && players_count == 4 && cnt_infightingkills > 0)
+        ? NG_STATSY_SMALL
+        : NG_STATSY;
+
     // draw stat titles (top line)
-    V_DrawPatch(NG_STATSX+NG_SPACINGX-SHORT(kills->width),
-		NG_STATSY, kills);
-
-    V_DrawPatch(NG_STATSX+2*NG_SPACINGX-SHORT(items->width),
-		NG_STATSY, items);
-
-    V_DrawPatch(NG_STATSX+3*NG_SPACINGX-SHORT(secret->width),
-		NG_STATSY, secret);
-    
+    V_DrawPatch(NG_STATSX+NG_SPACINGX-SHORT(kills->width), stats_header_height, kills);
+    V_DrawPatch(NG_STATSX+2*NG_SPACINGX-SHORT(items->width), stats_header_height, items);
+    V_DrawPatch(NG_STATSX+3*NG_SPACINGX-SHORT(secret->width), stats_header_height, secret);
     if (dofrags)
-	V_DrawPatch(NG_STATSX+4*NG_SPACINGX-SHORT(frags->width),
-		    NG_STATSY, frags);
+	    V_DrawPatch(NG_STATSX+4*NG_SPACINGX-SHORT(frags->width), stats_header_height, frags);
 
     // draw stats
-    y = NG_STATSY + SHORT(kills->height);
+    y = stats_header_height + SHORT(kills->height);
 
     for (i=0 ; i<MAXPLAYERS ; i++)
     {
@@ -1377,6 +1408,15 @@ void WI_drawNetgameStats(void)
 	y += WI_SPACINGY;
     }
 
+    // [crispy] Infighting kills
+    if (crispy->infightingkills && cnt_infightingkills > 0)
+    {
+        x = NG_STATSX;
+        V_DrawPatchFlipped(x-SHORT(splat[0]->width-13), y+13, splat[0]);
+        x += NG_SPACINGX;
+        WI_drawPercent(x-pwidth, y+10, cnt_infightingkills);	
+        x += NG_SPACINGX;
+    } 
 }
 
 static int	sp_state;
