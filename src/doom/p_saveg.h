@@ -62,5 +62,9 @@ void P_RestoreTargets (void);
 extern FILE *save_stream;
 extern boolean savegame_error;
 
+// [FG] support up to 8 pages of savegames
+#define SAVES_PER_PAGE 8
+#define SAVEPAGE_MAX 7
+extern int savepage;
 
 #endif
