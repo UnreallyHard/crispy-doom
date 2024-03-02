@@ -63,6 +63,7 @@ typedef struct
 	int freelook_hh;
 	int gamma;
 	int hires;
+    int infightingkills;
 	int jump;
 	int leveltime;
 	int mouselook;
@@ -92,7 +93,6 @@ typedef struct
 	int cleanscreenshot;
 	int demowarp;
 	int fps;
-    int infightingkills;
 
 	boolean flashinghom;
 	boolean fliplevels;
