@@ -41,6 +41,7 @@ typedef struct
 	int automapoverlay;
 	int automaprotate;
 	int automapstats;
+    int autosaveslot;
 	int bobfactor;
 	int brightmaps;
 	int btusetimer;
@@ -92,7 +93,6 @@ typedef struct
 	int cleanscreenshot;
 	int demowarp;
 	int fps;
-	int autosaveslot;
 
 	boolean flashinghom;
 	boolean fliplevels;
