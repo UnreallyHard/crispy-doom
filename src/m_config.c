@@ -2397,6 +2397,15 @@ static default_t extra_defaults_list[] =
     //!
     // @game doom
     //
+    // Show monsters' infighting kills on an intermission screen
+    // in a multiplayer game 
+    //
+
+    CONFIG_VARIABLE_INT(crispy_infightingkills),
+
+    //!
+    // @game doom
+    //
     // Enable jumping.
     //
 

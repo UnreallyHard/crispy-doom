@@ -88,6 +88,7 @@ extern fixed_t forwardmove[2];
 extern fixed_t sidemove[2];
 
 extern boolean sendpause;
+extern int     infightingkills_count; // [crispy] count monsters' infighting kills
 
 
 #endif

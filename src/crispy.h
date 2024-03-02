@@ -64,6 +64,7 @@ typedef struct
 	int freelook_hh;
 	int gamma;
 	int hires;
+    int infightingkills;
 	int jump;
 	int leveltime;
 	int mouselook;

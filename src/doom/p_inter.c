@@ -50,6 +50,7 @@
 int	maxammo[NUMAMMO] = {200, 50, 300, 50};
 int	clipammo[NUMAMMO] = {10, 4, 20, 1};
 
+int infightingkills_count = 0; // [crispy]
 
 //
 // GET STUFF
@@ -749,11 +750,16 @@ P_KillMobj
 	if (target->player)
 	    source->player->frags[target->player-players]++;
     }
-    else if (!netgame && (target->flags & MF_COUNTKILL) )
+    else if (target->flags & MF_COUNTKILL)
     {
-	// count all monster deaths,
-	// even those caused by other monsters
-	players[0].killcount++;
+        if (!netgame)
+        {
+            // count all monster deaths,
+            // even those caused by other monsters
+            players[0].killcount++;
+        }
+
+        infightingkills_count++; // [crispy] infighting kills
     }
     
     if (target->player)

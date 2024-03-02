@@ -1121,6 +1121,7 @@ P_SetupLevel
     totalkills = totalitems = totalsecret = wminfo.maxfrags = 0;
     // [crispy] count spawned monsters
     extrakills = 0;
+    infightingkills_count = 0; // [crispy] count monsters' infighting kills
     wminfo.partime = 180;
     for (i=0 ; i<MAXPLAYERS ; i++)
     {
