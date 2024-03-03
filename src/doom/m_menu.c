@@ -2794,11 +2794,14 @@ boolean M_Responder (event_t* ev)
                 G_DoPlayDemo();
                 return true;
             }
+            else if (crispy->net_levelchange)
+            {
+                send_load_level = true; 
+            }
             else
             {
-                // if (G_ReloadLevel())
-                // return true;
-                send_load_level = true; 
+                if (G_ReloadLevel())
+                return true;
             }
         }
         else if ((!netgame || netdemo || crispy->net_levelchange) && key != 0 && key == key_menu_nextlevel)
@@ -2810,12 +2813,14 @@ boolean M_Responder (event_t* ev)
                 G_DemoGotoNextLevel(true);
                 return true;
             }
+            else if (crispy->net_levelchange)
+            {
+                send_load_level = true; 
+            }
             else
             {
-                // if (G_GotoNextLevel())
-                //     return true;
-                send_load_level = true; 
-                //G_ExitLevel();
+                if (G_GotoNextLevel())
+                    return true;
             }
         }
     }

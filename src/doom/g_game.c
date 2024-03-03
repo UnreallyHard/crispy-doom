@@ -1220,6 +1220,13 @@ static void G_CrispyScreenShot()
 	crispy->screenshotmsg = 2;
 }
 
+// [crispy] clear the "savename" variable,
+// i.e. restart level from scratch upon resurrection
+static inline void G_ClearSavename ()
+{
+    M_StringCopy(savename, "", sizeof(savename));
+}
+
 //
 // G_Ticker
 // Make ticcmd_ts for the players.
@@ -1379,7 +1386,8 @@ void G_Ticker (void)
           case BTS_LOAD_LEVEL: 
             if (gamestate == GS_LEVEL)
             {
-                G_DeferedInitNew(gameskill, gameepisode, gamemap);
+                gameaction = ga_loadlevel;
+                G_ClearSavename();
             }
 		    break;
 					 
@@ -1676,13 +1684,6 @@ void G_DeathMatchSpawnPlayer (int playernum)
     // no good spot, so the player will probably get stuck 
     P_SpawnPlayer (&playerstarts[playernum]); 
 } 
-
-// [crispy] clear the "savename" variable,
-// i.e. restart level from scratch upon resurrection
-static inline void G_ClearSavename ()
-{
-    M_StringCopy(savename, "", sizeof(savename));
-}
 
 //
 // G_DoReborn 
