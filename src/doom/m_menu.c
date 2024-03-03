@@ -2776,43 +2776,48 @@ boolean M_Responder (event_t* ev)
             }
 #endif
 	    return true;
-	}
+	    }
         // [crispy] those two can be considered as shortcuts for the IDCLEV cheat
         // and should be treated as such, i.e. add "if (!netgame)"
         // hovewer, allow while multiplayer demos
         else if ((!netgame || netdemo || crispy->net_levelchange) && key != 0 && key == key_menu_reloadlevel)
-        //
         {
-	    if (demoplayback)         
-	    {
-		if (crispy->demowarp)
-		{
-		// [crispy] enable screen render back before replaying
-		nodrawers = false;
-		singletics = false;
-		}
-		// [crispy] replay demo lump or file
-		G_DoPlayDemo();
-		return true;
-	    }
-	    else
-	    if (G_ReloadLevel())
-		return true;
+            if (demoplayback)         
+            {
+                if (crispy->demowarp)
+                {
+                    // [crispy] enable screen render back before replaying
+                    nodrawers = false;
+                    singletics = false;
+                }
+                // [crispy] replay demo lump or file
+                G_DoPlayDemo();
+                return true;
+            }
+            else
+            {
+                // if (G_ReloadLevel())
+                // return true;
+                send_load_level = true; 
+            }
         }
         else if ((!netgame || netdemo || crispy->net_levelchange) && key != 0 && key == key_menu_nextlevel)
         {
-	    if (demoplayback)
-	    {
-		// [crispy] go to next level
-		demo_gotonextlvl = true;
-		G_DemoGotoNextLevel(true);
-		return true;
-	    }
-	    else
-	    if (G_GotoNextLevel())
-		return true;
+            if (demoplayback)
+            {
+                // [crispy] go to next level
+                demo_gotonextlvl = true;
+                G_DemoGotoNextLevel(true);
+                return true;
+            }
+            else
+            {
+                // if (G_GotoNextLevel())
+                //     return true;
+                send_load_level = true; 
+                //G_ExitLevel();
+            }
         }
-
     }
 
     // Pop-up menu?

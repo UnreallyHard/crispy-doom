@@ -114,6 +114,7 @@ int             timelimit;
 boolean         paused; 
 boolean         sendpause;             	// send a pause event next tic 
 boolean         sendsave;             	// send a save event next tic 
+boolean         send_load_level;        // [crispy] send a load_level event next tic 
 boolean         usergame;               // ok to save / end game 
  
 boolean         timingdemo;             // if true, exit with report on completion 
@@ -817,6 +818,13 @@ void G_BuildTiccmd (ticcmd_t* cmd, int maketic)
 	cmd->buttons = BT_SPECIAL | BTS_SAVEGAME | (savegameslot<<BTS_SAVESHIFT); 
     } 
 
+    // [crispy] load same level for net players
+    if (send_load_level) 
+    { 
+        send_load_level = false; 
+        cmd->buttons = BT_SPECIAL | BTS_LOAD_LEVEL;
+    } 
+
     if (crispy->fliplevels)
     {
 	cmd->angleturn = -cmd->angleturn;
@@ -960,6 +968,7 @@ void G_DoLoadLevel (void)
     joyxmove = joyymove = joystrafemove = joylook = 0;
     mousex = mousex2 = mousey = 0;
     sendpause = sendsave = paused = false;
+    send_load_level = false; // [crispy]
     memset(mousearray, 0, sizeof(mousearray));
     memset(joyarray, 0, sizeof(joyarray));
     R_SetGoobers(false);
@@ -1366,6 +1375,13 @@ void G_Ticker (void)
 		    if (musicVolume)
 			S_ResumeSound (); 
 		    break; 
+
+          case BTS_LOAD_LEVEL: 
+            if (gamestate == GS_LEVEL)
+            {
+                G_DeferedInitNew(gameskill, gameepisode, gamemap);
+            }
+		    break;
 					 
 		  case BTS_SAVEGAME: 
 		    // [crispy] never override savegames by demo playback
