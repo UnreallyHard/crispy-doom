@@ -1388,6 +1388,10 @@ void G_Ticker (void)
             {
                 gameaction = ga_loadlevel;
                 G_ClearSavename();
+                for (i=0 ; i<MAXPLAYERS ; i++)
+                {
+                    players[i].playerstate = PST_REBORN;
+                }
             }
 		    break;
 					 
