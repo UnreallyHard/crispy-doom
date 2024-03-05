@@ -67,7 +67,6 @@ typedef struct
 	int leveltime;
 	int mouselook;
 	int neghealth;
-    int net_levelchange;
 	int overunder;
 	int pitch;
 	int playercoords;

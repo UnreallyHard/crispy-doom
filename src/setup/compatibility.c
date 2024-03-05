@@ -77,7 +77,6 @@ void BindCompatibilityVariables(void)
         M_BindIntVariable("crispy_leveltime",       &crispy->leveltime);
         M_BindIntVariable("crispy_mouselook",       &crispy->mouselook);
         M_BindIntVariable("crispy_neghealth",       &crispy->neghealth);
-        M_BindIntVariable("crispy_net_levelchange", &crispy->net_levelchange);
         M_BindIntVariable("crispy_overunder",       &crispy->overunder);
         M_BindIntVariable("crispy_pitch",           &crispy->pitch);
         M_BindIntVariable("crispy_playercoords",    &crispy->playercoords);
