@@ -134,6 +134,7 @@ static int strife_altdeath = 0;
 static int fast = 0;
 static int respawn = 0;
 static int mp_things_spawn_type = 0;  // [crispy]
+static int allow_level_change = 0;  // [crispy]
 static int udpport = 2342;
 static int timer = 0;
 static int privateserver = 0;
@@ -287,6 +288,11 @@ static void StartGame(int multiplayer)
         if (mp_things_spawn_type) // [crispy]
         {   
             AddCmdLineParameter(exec, "-mpspawntype %i", mp_things_spawn_type);
+        }
+
+        if (allow_level_change) // [crispy]
+        {   
+            AddCmdLineParameter(exec, "-netlevelchange");
         }
     }
 
@@ -729,6 +735,8 @@ static void MultiplayerFlags(void) // [crispy]
         TXT_NewRadioButton("All except weapons", &mp_things_spawn_type, MP_THINGS_SPAWN_ALL_BUT_WEAPONS),
         TXT_NewRadioButton("Only monsters", &mp_things_spawn_type, MP_THINGS_SPAWN_ONLY_MONSTERS),
         TXT_NewRadioButton("None", &mp_things_spawn_type, MP_THINGS_SPAWN_NONE),
+        TXT_NewSeparator("Functions"),
+        TXT_NewCheckBox("Allow Level Reload/Change", &allow_level_change),
         NULL
     );
 }
