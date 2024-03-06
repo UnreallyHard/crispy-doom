@@ -113,7 +113,7 @@ static const char *strife_skills[] =
 
 static const char *character_classes[] = { "Fighter", "Cleric", "Mage" };
 
-static const char *gamemodes[] = { "Co-operative", "Deathmatch", "Deathmatch 2.0", "Deathmatch 3.0" };
+static const char *gamemodes[] = { "Co-operative", "Deathmatch", "Deathmatch 2.0", "Deathmatch 3.0", "Coop Survival" };
 
 static const char *strife_gamemodes[] =
 {
@@ -129,7 +129,7 @@ static char *extra_params[NUM_EXTRA_PARAMS];
 static int character_class = 0;
 static int skill = 2;
 static int nomonsters = 0;
-static int deathmatch = 0;
+static int deathmatch = MODE_COOPERATIVE;
 static int strife_altdeath = 0;
 static int fast = 0;
 static int respawn = 0;
@@ -262,17 +262,21 @@ static void StartGame(int multiplayer)
         AddCmdLineParameter(exec, "-server");
         AddCmdLineParameter(exec, "-port %i", udpport);
 
-        if (deathmatch == 1)
+        if (deathmatch == MODE_DEATHMATCH)
         {
             AddCmdLineParameter(exec, "-deathmatch");
         }
-        else if (deathmatch == 2 || strife_altdeath != 0)
+        else if (deathmatch == MODE_ALTDEATH || strife_altdeath != 0)
         {
             AddCmdLineParameter(exec, "-altdeath");
         }
-        else if (deathmatch == 3) // AX: this is a Crispy-specific change
+        else if (deathmatch == MODE_DM3) // AX: this is a Crispy-specific change
         {
             AddCmdLineParameter(exec, "-dm3");
+        }
+        else if (deathmatch == MODE_COOP_SURVIVAL) // [crispy]: Coop Survival mode
+        {
+            AddCmdLineParameter(exec, "-coopsurvival");
         }
 
         if (timer > 0)
@@ -703,7 +707,7 @@ static txt_dropdown_list_t *GameTypeDropdown(void)
     {
         case doom:
         default:
-            return TXT_NewDropdownList(&deathmatch, gamemodes, 4);
+            return TXT_NewDropdownList(&deathmatch, gamemodes, MODE_TYPE_NUM);
 
         // Heretic and Hexen don't support Deathmatch II:
 

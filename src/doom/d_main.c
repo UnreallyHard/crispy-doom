@@ -1555,7 +1555,7 @@ void D_DoomMain (void)
     //
 
     if (M_CheckParm ("-deathmatch"))
-	deathmatch = 1;
+	deathmatch = MODE_DEATHMATCH;
 
     //!
     // @category net
@@ -1566,7 +1566,7 @@ void D_DoomMain (void)
     //
 
     if (M_CheckParm ("-altdeath"))
-	deathmatch = 2;
+	deathmatch = MODE_ALTDEATH;
 
     //!
     // @category net
@@ -1577,7 +1577,20 @@ void D_DoomMain (void)
     //
 
     if (M_CheckParm ("-dm3"))
-	deathmatch = 3;
+	deathmatch = MODE_DM3;
+
+    //!
+    // @category net
+    // [crispy]
+    //
+    // Start a Coop Survival game. 
+    // Rules are almost identical to a singleplayer expirience.
+    //
+
+    if (M_CheckParm ("-coopsurvival"))
+    {
+	    deathmatch = MODE_COOP_SURVIVAL;
+    }
 
     //! 
     // @arg <n>
