@@ -190,7 +190,8 @@ P_GiveWeapon
     boolean	gaveweapon;
 	
     if (netgame
-	&& (deathmatch!=2)
+	&& deathmatch != MODE_ALTDEATH
+    && deathmatch != MODE_COOP_SURVIVAL // [crispy] Take weapons in CoopSurvival
 	 && !dropped )
     {
 	// leave placed weapons forever on net games
@@ -452,7 +453,7 @@ P_TouchSpecialThing
 	    player->message = DEH_String(GOTBLUECARD);
 	P_GiveCard (player, it_bluecard);
 	sound = sfx_keyup; // [NS] Optional key pickup sound.
-	if (!netgame)
+	if (!netgame || (netgame && deathmatch == MODE_COOP_SURVIVAL)) // [crispy] Take cards in SP and in CoopSurvival
 	    break;
 	return;
 	
@@ -461,7 +462,7 @@ P_TouchSpecialThing
 	    player->message = DEH_String(GOTYELWCARD);
 	P_GiveCard (player, it_yellowcard);
 	sound = sfx_keyup; // [NS] Optional key pickup sound.
-	if (!netgame)
+	if (!netgame || (netgame && deathmatch == MODE_COOP_SURVIVAL)) // [crispy]
 	    break;
 	return;
 	
@@ -470,7 +471,7 @@ P_TouchSpecialThing
 	    player->message = DEH_String(GOTREDCARD);
 	P_GiveCard (player, it_redcard);
 	sound = sfx_keyup; // [NS] Optional key pickup sound.
-	if (!netgame)
+	if (!netgame || (netgame && deathmatch == MODE_COOP_SURVIVAL)) // [crispy]
 	    break;
 	return;
 	
@@ -479,7 +480,7 @@ P_TouchSpecialThing
 	    player->message = DEH_String(GOTBLUESKUL);
 	P_GiveCard (player, it_blueskull);
 	sound = sfx_keyup; // [NS] Optional key pickup sound.
-	if (!netgame)
+	if (!netgame || (netgame && deathmatch == MODE_COOP_SURVIVAL)) // [crispy]
 	    break;
 	return;
 	
@@ -488,7 +489,7 @@ P_TouchSpecialThing
 	    player->message = DEH_String(GOTYELWSKUL);
 	P_GiveCard (player, it_yellowskull);
 	sound = sfx_keyup; // [NS] Optional key pickup sound.
-	if (!netgame)
+	if (!netgame || (netgame && deathmatch == MODE_COOP_SURVIVAL)) // [crispy]
 	    break;
 	return;
 	
@@ -497,7 +498,7 @@ P_TouchSpecialThing
 	    player->message = DEH_String(GOTREDSKULL);
 	P_GiveCard (player, it_redskull);
 	sound = sfx_keyup; // [NS] Optional key pickup sound.
-	if (!netgame)
+	if (!netgame || (netgame && deathmatch == MODE_COOP_SURVIVAL)) // [crispy]
 	    break;
 	return;
 	
@@ -750,12 +751,12 @@ P_KillMobj
 	    source->player->frags[target->player-players]++;
     }
     else if (!netgame && (target->flags & MF_COUNTKILL) )
-    {
-	// count all monster deaths,
-	// even those caused by other monsters
-	players[0].killcount++;
-    }
-    
+        {
+            // count all monster deaths,
+            // even those caused by other monsters
+            players[0].killcount++;
+        }
+
     if (target->player)
     {
 	// count environment kills against you
