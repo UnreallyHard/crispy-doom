@@ -735,7 +735,7 @@ static void MultiplayerFlags(void) // [crispy]
         TXT_NewRadioButton("All except weapons", &mp_things_spawn_type, MP_THINGS_SPAWN_ALL_BUT_WEAPONS),
         TXT_NewRadioButton("Only monsters", &mp_things_spawn_type, MP_THINGS_SPAWN_ONLY_MONSTERS),
         TXT_NewRadioButton("None", &mp_things_spawn_type, MP_THINGS_SPAWN_NONE),
-        TXT_NewSeparator(),
+        TXT_NewSeparator("Functions"),
         TXT_NewCheckBox("Allow Level Reload/Change", &allow_level_change),
         NULL
     );

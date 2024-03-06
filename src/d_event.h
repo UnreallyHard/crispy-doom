@@ -90,7 +90,7 @@ typedef enum
 
     // Flag: game events, not really buttons.
     BT_SPECIAL		= 128,
-    BT_SPECIALMASK	= 3,
+    BT_SPECIALMASK	= 7,
     
     // Flag, weapon change pending.
     // If true, the next 3 bits hold weapon num.
@@ -103,7 +103,8 @@ typedef enum
     BTS_PAUSE		= 1,
     // Save the game at each console.
     BTS_SAVEGAME	= 2,
-    BTS_LOAD_LEVEL	= 3, // [crispy] load level
+    BTS_RELOAD_LEVEL    = 3, // [crispy] reload level
+    BTS_LOAD_NEXT_LEVEL = 4, // [crispy] load next level
 
     // Savegame slot numbers
     //  occupy the second byte of buttons.    

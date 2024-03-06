@@ -114,7 +114,8 @@ int             timelimit;
 boolean         paused; 
 boolean         sendpause;             	// send a pause event next tic 
 boolean         sendsave;             	// send a save event next tic 
-boolean         send_load_level;        // [crispy] send a load_level event next tic 
+boolean         send_reload_level;      // [crispy] send a reload_level event next tic
+boolean         send_load_next_level;   // [crispy] send a load_next_level event next tic 
 boolean         usergame;               // ok to save / end game 
  
 boolean         timingdemo;             // if true, exit with report on completion 
@@ -819,11 +820,18 @@ void G_BuildTiccmd (ticcmd_t* cmd, int maketic)
     } 
 
     // [crispy] load same level for net players
-    if (send_load_level) 
-    { 
-        send_load_level = false; 
-        cmd->buttons = BT_SPECIAL | BTS_LOAD_LEVEL;
-    } 
+    if (send_reload_level)
+    {
+        send_reload_level = false;
+        cmd->buttons = BT_SPECIAL | BTS_RELOAD_LEVEL;
+    }
+
+    // [crispy] load same level for net players
+    if (send_load_next_level)
+    {
+        send_load_next_level = false;
+        cmd->buttons = BT_SPECIAL | BTS_LOAD_NEXT_LEVEL;
+    }
 
     if (crispy->fliplevels)
     {
@@ -968,7 +976,7 @@ void G_DoLoadLevel (void)
     joyxmove = joyymove = joystrafemove = joylook = 0;
     mousex = mousex2 = mousey = 0;
     sendpause = sendsave = paused = false;
-    send_load_level = false; // [crispy]
+    send_reload_level = send_load_next_level = false; // [crispy]
     memset(mousearray, 0, sizeof(mousearray));
     memset(joyarray, 0, sizeof(joyarray));
     R_SetGoobers(false);
@@ -1236,6 +1244,7 @@ void G_Ticker (void)
     int		i;
     int		buf; 
     ticcmd_t*	cmd;
+    int epsd, map; // [crispy]
     
     // do player reborns if needed
     for (i=0 ; i<MAXPLAYERS ; i++) 
@@ -1382,18 +1391,6 @@ void G_Ticker (void)
 		    if (musicVolume)
 			S_ResumeSound (); 
 		    break; 
-
-          case BTS_LOAD_LEVEL: 
-            if (gamestate == GS_LEVEL)
-            {
-                gameaction = ga_loadlevel;
-                G_ClearSavename();
-                for (i=0 ; i<MAXPLAYERS ; i++)
-                {
-                    players[i].playerstate = PST_REBORN;
-                }
-            }
-		    break;
 					 
 		  case BTS_SAVEGAME: 
 		    // [crispy] never override savegames by demo playback
@@ -1413,6 +1410,29 @@ void G_Ticker (void)
 		    if (demorecording && paused)
 			sendpause = true;
 		    break; 
+
+          case BTS_RELOAD_LEVEL: // [crispy]
+            if (gamestate == GS_LEVEL)
+            {
+                //gameaction = ga_loadlevel;
+                G_ClearSavename();
+
+                G_InitNew (gameskill, gameepisode, gamemap);
+                // for (i=0 ; i<MAXPLAYERS ; i++)
+                // {
+                //     players[i].playerstate = PST_REBORN;
+                // }
+            }
+		    break;
+
+          case BTS_LOAD_NEXT_LEVEL: // [crispy]
+            if (gamestate == GS_LEVEL)
+            {
+                G_ClearSavename();
+                G_GetNextLevel(&epsd, &map);
+                G_InitNew (gameskill, epsd, map);
+            }
+		    break;
 		} 
 	    } 
 	}

@@ -88,7 +88,8 @@ extern fixed_t forwardmove[2];
 extern fixed_t sidemove[2];
 
 extern boolean sendpause;
-extern boolean send_load_level; // [crispy]
+extern boolean send_reload_level; // [crispy]
+extern boolean send_load_next_level; // [crispy]
 
 #endif
 
