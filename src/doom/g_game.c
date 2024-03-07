@@ -3504,4 +3504,24 @@ void G_DemoGotoNextLevel (boolean start)
     }
 } 
  
- 
+//
+// G_IsFirstActivePlayer
+// [crispy] Check if player is the first player who still in the game
+//
+boolean G_IsFirstActivePlayer (int player_id)
+{
+    int i;
+
+    for (i=0 ; i<MAXPLAYERS; i++)
+    {
+        if (playeringame[i])
+        {
+            if (i == player_id)
+            {
+                return true;
+            }
+            return false;
+        }
+    }
+    return false;
+}
