@@ -110,6 +110,7 @@ boolean         fastparm;	// checkparm of -fast
 boolean         coop_spawns = false;	// [crispy] checkparm of -coop_spawns
 int             mp_things_spawn_type; // [crispy] checkparm of -mpspawntype
 boolean         net_levelchange; // [crispy] checkparm of -netlevelchange
+int             coop_survival; // [crispy] checkparm of -coopsurvival
 
 
 
@@ -1555,7 +1556,7 @@ void D_DoomMain (void)
     //
 
     if (M_CheckParm ("-deathmatch"))
-	deathmatch = MODE_DEATHMATCH;
+	deathmatch = 1;
 
     //!
     // @category net
@@ -1566,7 +1567,7 @@ void D_DoomMain (void)
     //
 
     if (M_CheckParm ("-altdeath"))
-	deathmatch = MODE_ALTDEATH;
+	deathmatch = 2;
 
     //!
     // @category net
@@ -1577,20 +1578,7 @@ void D_DoomMain (void)
     //
 
     if (M_CheckParm ("-dm3"))
-	deathmatch = MODE_DM3;
-
-    //!
-    // @category net
-    // [crispy]
-    //
-    // Start a Coop Survival game. 
-    // Rules are almost identical to a singleplayer expirience.
-    //
-
-    if (M_CheckParm ("-coopsurvival"))
-    {
-	    deathmatch = MODE_COOP_SURVIVAL;
-    }
+	deathmatch = 3;
 
     //! 
     // @arg <n>
@@ -1616,6 +1604,19 @@ void D_DoomMain (void)
 
     net_levelchange = M_CheckParm ("-netlevelchange");
     
+    //!
+    // @category net
+    // [crispy]
+    //
+    // Start a Coop Survival game. 
+    // Rules are almost identical to a singleplayer expirience.
+    //
+
+    if (M_CheckParm ("-coopsurvival"))
+    {
+        coop_survival = 1;
+    }
+
     if (devparm)
 	DEH_printf(D_DEVSTR);
     

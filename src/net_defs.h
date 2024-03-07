@@ -179,17 +179,6 @@ typedef enum // [crispy]
     MP_THINGS_SPAWN_TYPES_NUM,
 } net_mp_things_spawn_t;
 
-typedef enum // [crispy]
-{
-    MODE_COOPERATIVE,
-    MODE_DEATHMATCH,
-    MODE_ALTDEATH,
-    MODE_DM3,
-    MODE_COOP_SURVIVAL,
-
-    MODE_TYPE_NUM,
-} net_modes_t;
-
 // Settings specified when the client connects to the server.
 
 typedef struct
@@ -232,6 +221,7 @@ typedef struct
     int num_players;
     int consoleplayer;
     int mp_things_spawn_type; // [crispy]
+    int coop_survival; // [crispy]
 
     // Hexen player classes:
 

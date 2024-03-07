@@ -190,8 +190,8 @@ P_GiveWeapon
     boolean	gaveweapon;
 	
     if (netgame
-	&& deathmatch != MODE_ALTDEATH
-    && deathmatch != MODE_COOP_SURVIVAL // [crispy] Take weapons in CoopSurvival
+	&& deathmatch != 2
+    && !coop_survival // [crispy] Take weapons in CoopSurvival
 	 && !dropped )
     {
 	// leave placed weapons forever on net games
@@ -453,7 +453,7 @@ P_TouchSpecialThing
 	    player->message = DEH_String(GOTBLUECARD);
 	P_GiveCard (player, it_bluecard);
 	sound = sfx_keyup; // [NS] Optional key pickup sound.
-	if (!netgame || (netgame && deathmatch == MODE_COOP_SURVIVAL)) // [crispy] Take cards in SP and in CoopSurvival
+	if (!netgame || (netgame && coop_survival)) // [crispy] Take cards in SP and in CoopSurvival
 	    break;
 	return;
 	
@@ -462,7 +462,7 @@ P_TouchSpecialThing
 	    player->message = DEH_String(GOTYELWCARD);
 	P_GiveCard (player, it_yellowcard);
 	sound = sfx_keyup; // [NS] Optional key pickup sound.
-	if (!netgame || (netgame && deathmatch == MODE_COOP_SURVIVAL)) // [crispy]
+	if (!netgame || (netgame && coop_survival)) // [crispy]
 	    break;
 	return;
 	
@@ -471,7 +471,7 @@ P_TouchSpecialThing
 	    player->message = DEH_String(GOTREDCARD);
 	P_GiveCard (player, it_redcard);
 	sound = sfx_keyup; // [NS] Optional key pickup sound.
-	if (!netgame || (netgame && deathmatch == MODE_COOP_SURVIVAL)) // [crispy]
+	if (!netgame || (netgame && coop_survival)) // [crispy]
 	    break;
 	return;
 	
@@ -480,7 +480,7 @@ P_TouchSpecialThing
 	    player->message = DEH_String(GOTBLUESKUL);
 	P_GiveCard (player, it_blueskull);
 	sound = sfx_keyup; // [NS] Optional key pickup sound.
-	if (!netgame || (netgame && deathmatch == MODE_COOP_SURVIVAL)) // [crispy]
+	if (!netgame || (netgame && coop_survival)) // [crispy]
 	    break;
 	return;
 	
@@ -489,7 +489,7 @@ P_TouchSpecialThing
 	    player->message = DEH_String(GOTYELWSKUL);
 	P_GiveCard (player, it_yellowskull);
 	sound = sfx_keyup; // [NS] Optional key pickup sound.
-	if (!netgame || (netgame && deathmatch == MODE_COOP_SURVIVAL)) // [crispy]
+	if (!netgame || (netgame && coop_survival)) // [crispy]
 	    break;
 	return;
 	
@@ -498,7 +498,7 @@ P_TouchSpecialThing
 	    player->message = DEH_String(GOTREDSKULL);
 	P_GiveCard (player, it_redskull);
 	sound = sfx_keyup; // [NS] Optional key pickup sound.
-	if (!netgame || (netgame && deathmatch == MODE_COOP_SURVIVAL)) // [crispy]
+	if (!netgame || (netgame && coop_survival)) // [crispy]
 	    break;
 	return;
 	

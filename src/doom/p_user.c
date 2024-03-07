@@ -262,7 +262,7 @@ void P_DeathThink (player_t* player)
 	player->damagecount--;
 	
 
-    if (player->cmd.buttons & BT_USE && !(netgame && deathmatch == MODE_COOP_SURVIVAL)) // [crispy] Disable standard resurection in CoopSurvival
+    if (player->cmd.buttons & BT_USE && !(netgame && coop_survival)) // [crispy] Disable standard resurection in CoopSurvival
 	player->playerstate = PST_REBORN;
 }
 
