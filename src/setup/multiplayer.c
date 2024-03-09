@@ -137,7 +137,9 @@ static int fast = 0;
 static int respawn = 0;
 static int mp_things_spawn_type = 0;  // [crispy]
 static int allow_level_change = 0;  // [crispy]
-static int coop_survival = 0;  // [crispy]
+static int coop_survival = 0; // [crispy]
+static int survival_remember_players_data = 0; // [crispy]
+static int survival_continue_on_ally_death = 0; // [crispy]
 static int udpport = 2342;
 static int timer = 0;
 static int privateserver = 0;
@@ -300,6 +302,16 @@ static void StartGame(int multiplayer)
 
         if (!deathmatch && coop_survival) // [crispy]: Coop Survival mode
         {
+            if (survival_remember_players_data) // [crispy]
+            {   
+                coop_survival |= SURVIVAL_REMEMBER_PLAYERS_DATA_BIT;
+            }
+
+            if (survival_continue_on_ally_death) // [crispy]
+            {   
+                coop_survival |= SURVIVAL_CONTINUE_ON_ALLY_DEATH_BIT;
+            }
+            
             AddCmdLineParameter(exec, "-coopsurvival %i", coop_survival);
         }
     }
@@ -754,6 +766,14 @@ static void MultiplayerFlags(void) // [crispy]
             TXT_NewCheckBox("Cooperative Survival Rules", &coop_survival),
             NULL
         );
+        if (coop_survival)
+        {
+            TXT_AddWidgets(window,        
+                TXT_NewCheckBox("Survival pistol start", &survival_remember_players_data),
+                TXT_NewCheckBox("Survival continue on ally death", &survival_continue_on_ally_death),
+                NULL
+            );
+        }
     }
 }
 

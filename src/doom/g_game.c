@@ -95,6 +95,8 @@ void	G_DoCompleted (void);
 void	G_DoVictory (void); 
 void	G_DoWorldDone (void); 
 void	G_DoSaveGame (void); 
+void    G_SavePlayersDataToMemory(void); // [crispy]
+void    G_LoadPlayersDataFromMemory(void); // [crispy]
  
 // Gamestate the last time G_Ticker was called.
 
@@ -1422,6 +1424,10 @@ void G_Ticker (void)
             {
                 G_ClearSavename();
                 G_InitNew (gameskill, gameepisode, gamemap);
+                if ((coop_survival & SURVIVAL_REMEMBER_PLAYERS_DATA_BIT) != 0) // [crispy]
+                {
+                    G_LoadPlayersDataFromMemory();
+                }
             }
 		    break;
 
@@ -2240,6 +2246,12 @@ void G_DoWorldDone (void)
     gamestate = GS_LEVEL; 
     gamemap = wminfo.next+1; 
     G_DoLoadLevel (); 
+
+    if ((coop_survival & SURVIVAL_REMEMBER_PLAYERS_DATA_BIT) != 0) // [crispy]
+    {
+        G_SavePlayersDataToMemory();
+    }
+
     gameaction = ga_nothing; 
     viewactive = true; 
 } 
@@ -2468,6 +2480,109 @@ void G_DoSaveGame (void)
  
 
 //
+// G_SavePlayersDataToMemory
+// [crispy] Saves extended OnLevelStart players' data
+// 
+void G_SavePlayersDataToMemory(void)
+{
+    int	i;
+	player_t *player;
+
+    for (i=0 ; i<MAXPLAYERS ; i++)
+    {
+        if (!playeringame[i])
+            continue;
+
+        player = (&players[i]);
+        player->healthOnLevelStart = player->health;
+        player->armorpointsOnLevelStart = player->armorpoints;
+        player->armortypeOnLevelStart = player->armortype;
+        player->backpackOnLevelStart = player->backpack;
+        player->readyweaponOnLevelStart = player->readyweapon;
+        player->pendingweaponOnLevelStart = player->pendingweapon;
+
+        for (i=0; i<NUMPOWERS; ++i)
+        {
+            player->powersOnLevelStart[i] = player->powers[i];
+        }
+
+        for (i=0; i<NUMCARDS; ++i)
+        {
+            player->cardsOnLevelStart[i] = player->cards[i];
+        }
+
+        for (i=0; i<NUMWEAPONS; ++i)
+        {
+            player->weaponownedOnLevelStart[i] = player->weaponowned[i];
+        }
+
+        for (i=0; i<NUMAMMO; ++i)
+        {
+            player->ammoOnLevelStart[i] = player->ammo[i];
+        }
+
+        for (i=0; i<NUMAMMO; ++i)
+        {
+            player->maxammoOnLevelStart[i] = player->maxammo[i];
+        }
+    }
+}
+
+//
+// G_LoadPlayersDataFromMemory
+// [crispy] Loads extended OnLevelStart players' data
+//
+void G_LoadPlayersDataFromMemory(void)
+{ 
+    int	i;
+	player_t *player;
+	
+    for (i=0 ; i<MAXPLAYERS ; i++)
+    {
+        if (!playeringame[i])
+        {
+            continue;
+        } 
+        
+        player = &players[i];
+        player->usedown = player->attackdown = true;
+        player->playerstate = PST_LIVE;
+
+        player->health = player->healthOnLevelStart;
+        player->armorpoints = player->armorpointsOnLevelStart;
+        player->armortype = player->armortypeOnLevelStart;
+        player->backpack = player->backpackOnLevelStart;
+        player->readyweapon = player->readyweaponOnLevelStart;
+        player->pendingweapon = player->pendingweaponOnLevelStart;
+
+        for (i=0; i<NUMPOWERS; ++i)
+        {
+            player->powers[i] = player->powersOnLevelStart[i];
+        }
+
+        for (i=0; i<NUMCARDS; ++i)
+        {
+            player->cards[i] = player->cardsOnLevelStart[i];
+        }
+
+        for (i=0; i<NUMWEAPONS; ++i)
+        {
+            player->weaponowned[i] = player->weaponownedOnLevelStart[i];
+        }
+
+        for (i=0; i<NUMAMMO; ++i)
+        {
+            player->ammo[i] = player->ammoOnLevelStart[i];
+        }
+
+        for (i=0; i<NUMAMMO; ++i)
+        {
+            player->maxammo[i] = player->maxammoOnLevelStart[i];
+        }
+    }
+}
+
+//
 // G_InitNew
 // Can be called by the startup code or the menu task,
 // consoleplayer, displayplayer, playeringame[] should be set. 
@@ -2521,6 +2636,12 @@ void G_DoNewGame (void)
     */
     consoleplayer = 0;
     G_InitNew (d_skill, d_episode, d_map); 
+
+    if ((coop_survival & SURVIVAL_REMEMBER_PLAYERS_DATA_BIT) != 0) // [crispy]
+    {
+        G_SavePlayersDataToMemory();
+    }
+
     gameaction = ga_nothing; 
 } 
 

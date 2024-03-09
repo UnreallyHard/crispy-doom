@@ -301,5 +301,9 @@ typedef PACKED_STRUCT (
 
 
 
+// [crispy] coop survival bits
+#define SURVIVAL_BIT (1 << 0) // 0b00000001
+#define SURVIVAL_REMEMBER_PLAYERS_DATA_BIT (1 << 1) // 0b00000010
+#define SURVIVAL_CONTINUE_ON_ALLY_DEATH_BIT (1 << 2) // 0b00000100
 
 #endif			// __DOOMDATA__

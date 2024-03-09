@@ -193,6 +193,19 @@ typedef struct player_s
 
     // [crispy] "use" button timer
     int			btuse, btuse_tics;
+
+    // [crispy] onLevelStart properties
+    int			    healthOnLevelStart;
+    int			    armorpointsOnLevelStart;
+    int			    armortypeOnLevelStart;
+    int			    powersOnLevelStart[NUMPOWERS + 3];
+    boolean		    cardsOnLevelStart[NUMCARDS];
+    boolean		    backpackOnLevelStart;
+    weapontype_t  	readyweaponOnLevelStart;
+    weapontype_t	pendingweaponOnLevelStart;
+    int             weaponownedOnLevelStart[NUMWEAPONS];
+    int			    ammoOnLevelStart[NUMAMMO];
+    int			    maxammoOnLevelStart[NUMAMMO];
 } player_t;
 
 

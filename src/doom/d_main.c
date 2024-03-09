@@ -1612,10 +1612,8 @@ void D_DoomMain (void)
     // Rules are almost identical to a singleplayer expirience.
     //
 
-    if (M_CheckParm ("-coopsurvival"))
-    {
-        coop_survival = 1;
-    }
+    p = M_CheckParmWithArgs("-coopsurvival", 1);
+    coop_survival = atoi(myargv[p+1]);
 
     if (devparm)
 	DEH_printf(D_DEVSTR);
