@@ -762,18 +762,23 @@ static void MultiplayerFlags(void) // [crispy]
 
     if (!deathmatch)
     {
-        TXT_AddWidgets(window,        
+        TXT_AddWidgets(window,
             TXT_NewCheckBox("Cooperative Survival Rules", &coop_survival),
             NULL
         );
-        if (coop_survival)
-        {
-            TXT_AddWidgets(window,        
-                TXT_NewCheckBox("Survival Remember players' data", &survival_remember_players_data),
-                TXT_NewCheckBox("Survival Continue on ally death", &survival_continue_on_ally_death),
-                NULL
-            );
-        }
+
+        TXT_AddWidgets(window,
+            TXT_NewConditional(&coop_survival, 1,
+                TXT_MakeTable(2,
+                    TXT_NewStrut(4, 0),
+                    TXT_NewCheckBox("Remember players' data", &survival_remember_players_data),
+                    TXT_NewStrut(4, 0),
+                    TXT_NewCheckBox("Continue on ally death", &survival_continue_on_ally_death),
+                    NULL
+                )
+            ),
+            NULL
+        );
     }
 }
 

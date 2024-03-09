@@ -1424,10 +1424,8 @@ void G_Ticker (void)
           case BTS_RELOAD_LEVEL: // [crispy]
             if (gamestate == GS_LEVEL)
             {
-                printf("BTS_RELOAD_LEVEL\n");
                 G_ClearSavename();
                 G_InitNew (gameskill, gameepisode, gamemap);
-                printf("G_InitNew\n");
                 if ((coop_survival & SURVIVAL_REMEMBER_PLAYERS_DATA_BIT) != 0) // [crispy]
                 {
                     G_LoadPlayersDataFromMemory();
@@ -2494,8 +2492,6 @@ void G_SavePlayersDataToMemory(void)
 	player_t *player;
     saved_player_t *saved_player;
 
-    printf("G_SavePlayersDataToMemory\n");
-
     for (i=0 ; i<MAXPLAYERS ; i++)
     {
         if (!playeringame[i])
@@ -2550,8 +2546,6 @@ void G_LoadPlayersDataFromMemory(void)
     int k;
 	player_t *player;
     saved_player_t *saved_player;
-	
-    printf("G_LoadPlayersDataFromMemory\n");
 
     for (i=0 ; i<MAXPLAYERS ; i++)
     {
@@ -2561,7 +2555,12 @@ void G_LoadPlayersDataFromMemory(void)
         }
         
         player = &players[i];
-        saved_player = (&saved_players[i]);
+        saved_player = &saved_players[i];
+
+        if (saved_player->health <= 0)
+        {
+            continue;
+        }
 
         player->usedown = player->attackdown = true;
         player->health = saved_player->health;
@@ -2869,11 +2868,6 @@ G_InitNew
         }
         skytexturename = DEH_String(skytexturename);
         skytexture = R_TextureNumForName(skytexturename);
-    }
-
-    if ((coop_survival & SURVIVAL_REMEMBER_PLAYERS_DATA_BIT) != 0) // [crispy]
-    {
-        G_SavePlayersDataToMemory();
     }
 
     G_DoLoadLevel ();
