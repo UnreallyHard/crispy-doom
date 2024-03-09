@@ -261,14 +261,15 @@ void P_DeathThink (player_t* player)
     else if (player->damagecount)
 	player->damagecount--;
 	
-    if (netgame && coop_survival) // [crispy] CoopSurvival send_reload_level event on death
-    {
-        if (G_IsFirstActivePlayer(consoleplayer)){
-            send_reload_level = true;
-        }
+    // if (netgame && coop_survival) // [crispy] CoopSurvival send_reload_level event on death
+    // {
+    //     if (G_IsFirstActivePlayer(consoleplayer))
+    //     {
+    //         send_reload_level = true;
+    //     }
 
-        player->playerstate = PST_REBORN;
-    }
+    //     player->playerstate = PST_REBORN;
+    // }
 
     if (player->cmd.buttons & BT_USE && !(netgame && coop_survival)) // [crispy] Disable standard resurection in CoopSurvival
 	player->playerstate = PST_REBORN;

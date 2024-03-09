@@ -97,6 +97,8 @@ void	G_DoWorldDone (void);
 void	G_DoSaveGame (void); 
 void    G_SavePlayersDataToMemory(void); // [crispy]
 void    G_LoadPlayersDataFromMemory(void); // [crispy]
+boolean G_IsThereDeadPlayers (void); // [crispy]
+boolean G_AreAllPlayersDead (void); // [crispy] 
  
 // Gamestate the last time G_Ticker was called.
 
@@ -1261,6 +1263,14 @@ void G_Ticker (void)
 	if (playeringame[i] && players[i].playerstate == PST_REBORN) 
 	    G_DoReborn (i);
     
+    if ( // [crispy] CoopSurvival send_reload_level event
+        ((coop_survival & SURVIVAL_CONTINUE_ON_ALLY_DEATH_BIT) != 0 && G_AreAllPlayersDead()) ||
+        ((coop_survival & SURVIVAL_CONTINUE_ON_ALLY_DEATH_BIT) == 0 && G_IsThereDeadPlayers())
+    )
+    {
+        send_reload_level = true;
+    }
+
     // do things to change the game state
     while (gameaction != ga_nothing) 
     { 
@@ -3649,4 +3659,51 @@ boolean G_IsFirstActivePlayer (int player_id)
         }
     }
     return false;
+}
+
+//
+// G_IsThereDeadPlayers
+// [crispy] Check if there is at least one dead player
+//
+boolean G_IsThereDeadPlayers (void)
+{
+    int i;
+
+    for (i=0 ; i<MAXPLAYERS; i++)
+    {
+        if (playeringame[i] && players[i].playerstate == PST_DEAD)
+        {
+            return true;
+        }
+    }
+
+    return false;
+}
+
+//
+// G_AreAllPlayersDead
+// [crispy] Check if all players are dead
+//
+boolean G_AreAllPlayersDead (void)
+{
+    int i;
+    int active_players;
+    int dead_players;
+
+    active_players = dead_players = 0;
+
+    for (i=0 ; i<MAXPLAYERS; i++)
+    {
+        if (playeringame[i])
+        {
+            active_players++;
+
+            if (players[i].playerstate == PST_DEAD)
+            {
+                dead_players++;
+            }
+        }
+    }
+
+    return active_players > 0 && active_players == dead_players;
 }

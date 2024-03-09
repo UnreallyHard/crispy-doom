@@ -353,7 +353,82 @@ P_GivePower
     return true;
 }
 
+//
+// P_DropPlayerBackpack
+// [crispy] Drop player's backpack on the ground
+//
+void P_DropPlayerBackpack (mobj_t* playerMobj)
+{
+    int i;
+    mobj_t*	mo;
+    player_t* player;
 
+    if (!playerMobj->player)
+    {
+        return;
+    }
+
+    player = playerMobj->player;
+
+    for (i = 0; i < MAXPLAYERS; i++)
+    {
+        if (player == &players[i])
+            break;
+    }
+
+    mo = P_SpawnMobj(playerMobj->x, playerMobj->y, ONFLOORZ, MT_MISC24);
+    mo->flags |= MF_PICKUP | MF_SPECIAL;
+    mo->info->deadPlayerBackpackNumber = i;
+}
+
+//
+// P_PickUpPlayerBackpack
+// [crispy] Pick up player's backpack
+//
+void P_PickUpPlayerBackpack (player_t* taker, player_t* giver)
+{
+    int	i;
+
+	if (giver->backpack && !taker->backpack)
+	{
+	    for (i=0 ; i<NUMAMMO ; i++)
+        {
+            taker->maxammo[i] *= 2;
+        }
+	    taker->backpack = true;
+        giver->backpack = false;
+	}
+
+    for (i=0; i<NUMCARDS; ++i)
+    {
+        if (giver->cards[i] && !taker->cards[i])
+        {
+            taker->cards[i] = true;
+        }
+        giver->cards[i] = false;
+    }
+
+    for (i=0; i<NUMWEAPONS; ++i)
+    {
+        if (giver->weaponowned[i] && !taker->weaponowned[i])
+        {
+            taker->weaponowned[i] = true;
+        }
+        giver->weaponowned[i] = false;
+    }
+
+    for (i=0; i<NUMAMMO; ++i)
+    {
+	    taker->ammo[i] +=  giver->ammo[i];
+
+        if (taker->ammo[i] > taker->maxammo[i])
+        {
+            taker->ammo[i] = taker->maxammo[i];
+        }
+
+        giver->ammo[i] = 0;
+    }
+}
 
 //
 // P_TouchSpecialThing
@@ -635,6 +710,14 @@ P_TouchSpecialThing
 	break;
 	
       case SPR_BPAK:
+      // [crispy] CoopSurvival Get player's backpack
+      if (netgame && (coop_survival & SURVIVAL_CONTINUE_ON_ALLY_DEATH_BIT) != 0 && special->info->deadPlayerBackpackNumber)
+        {
+            P_PickUpPlayerBackpack(player, &players[special->info->deadPlayerBackpackNumber]);
+            sound = sfx_wpnup;
+            player->message = DEH_String(GOTBACKPACK);
+        }
+        break;
 	if (!player->backpack)
 	{
 	    for (i=0 ; i<NUMAMMO ; i++)
@@ -782,6 +865,12 @@ P_KillMobj
 	    AM_Stop ();
 	}
 	
+    }
+
+    // [crispy] CoopSurvival drop dead player's backpack
+    if (netgame && (coop_survival & SURVIVAL_CONTINUE_ON_ALLY_DEATH_BIT) != 0)
+    {
+        P_DropPlayerBackpack(target);
     }
 
     // [crispy] Lost Soul, Pain Elemental and Barrel explosions are translucent
