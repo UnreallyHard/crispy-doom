@@ -769,8 +769,8 @@ static void MultiplayerFlags(void) // [crispy]
         if (coop_survival)
         {
             TXT_AddWidgets(window,        
-                TXT_NewCheckBox("Survival pistol start", &survival_remember_players_data),
-                TXT_NewCheckBox("Survival continue on ally death", &survival_continue_on_ally_death),
+                TXT_NewCheckBox("Survival Remember players' data", &survival_remember_players_data),
+                TXT_NewCheckBox("Survival Continue on ally death", &survival_continue_on_ally_death),
                 NULL
             );
         }

@@ -252,6 +252,8 @@ int             vanilla_demo_limit = 1;
 // [crispy] store last cmd to track joins
 static ticcmd_t* last_cmd = NULL;
  
+saved_player_t  saved_players[MAXPLAYERS]; // [crispy]
+
 int G_CmdChecksum (ticcmd_t* cmd) 
 { 
     size_t		i;
@@ -1422,8 +1424,10 @@ void G_Ticker (void)
           case BTS_RELOAD_LEVEL: // [crispy]
             if (gamestate == GS_LEVEL)
             {
+                printf("BTS_RELOAD_LEVEL\n");
                 G_ClearSavename();
                 G_InitNew (gameskill, gameepisode, gamemap);
+                printf("G_InitNew\n");
                 if ((coop_survival & SURVIVAL_REMEMBER_PLAYERS_DATA_BIT) != 0) // [crispy]
                 {
                     G_LoadPlayersDataFromMemory();
@@ -2486,44 +2490,52 @@ void G_DoSaveGame (void)
 void G_SavePlayersDataToMemory(void)
 {
     int	i;
+    int k;
 	player_t *player;
+    saved_player_t *saved_player;
+
+    printf("G_SavePlayersDataToMemory\n");
 
     for (i=0 ; i<MAXPLAYERS ; i++)
     {
         if (!playeringame[i])
+        {
             continue;
+        }
 
         player = (&players[i]);
-        player->healthOnLevelStart = player->health;
-        player->armorpointsOnLevelStart = player->armorpoints;
-        player->armortypeOnLevelStart = player->armortype;
-        player->backpackOnLevelStart = player->backpack;
-        player->readyweaponOnLevelStart = player->readyweapon;
-        player->pendingweaponOnLevelStart = player->pendingweapon;
+        saved_player = (&saved_players[i]);
 
-        for (i=0; i<NUMPOWERS; ++i)
+        saved_player->health = player->health;
+        saved_player->armorpoints = player->armorpoints;
+        saved_player->armortype = player->armortype;
+        saved_player->backpack = player->backpack;
+        saved_player->readyweapon = player->readyweapon;
+        saved_player->pendingweapon = player->pendingweapon;
+
+        for (k=0; k<NUMPOWERS; ++k)
         {
-            player->powersOnLevelStart[i] = player->powers[i];
+            saved_player->powers[k] = player->powers[k];
         }
 
-        for (i=0; i<NUMCARDS; ++i)
+        for (k=0; k<NUMCARDS; ++k)
         {
-            player->cardsOnLevelStart[i] = player->cards[i];
+            saved_player->cards[k] = player->cards[k];
         }
 
-        for (i=0; i<NUMWEAPONS; ++i)
+        for (k=0; k<NUMWEAPONS; ++k)
         {
-            player->weaponownedOnLevelStart[i] = player->weaponowned[i];
+            saved_player->weaponowned[k] = player->weaponowned[k];
         }
 
-        for (i=0; i<NUMAMMO; ++i)
+        for (k=0; k<NUMAMMO; ++k)
         {
-            player->ammoOnLevelStart[i] = player->ammo[i];
+            saved_player->ammo[k] = player->ammo[k];
         }
 
-        for (i=0; i<NUMAMMO; ++i)
+        for (k=0; k<NUMAMMO; ++k)
         {
-            player->maxammoOnLevelStart[i] = player->maxammo[i];
+            saved_player->maxammo[k] = player->maxammo[k];
         }
     }
 }
@@ -2533,51 +2545,55 @@ void G_SavePlayersDataToMemory(void)
 // [crispy] Loads extended OnLevelStart players' data
 //
 void G_LoadPlayersDataFromMemory(void)
-{ 
+{
     int	i;
+    int k;
 	player_t *player;
+    saved_player_t *saved_player;
 	
+    printf("G_LoadPlayersDataFromMemory\n");
+
     for (i=0 ; i<MAXPLAYERS ; i++)
     {
         if (!playeringame[i])
         {
             continue;
-        } 
+        }
         
         player = &players[i];
+        saved_player = (&saved_players[i]);
+
         player->usedown = player->attackdown = true;
-        player->playerstate = PST_LIVE;
+        player->health = saved_player->health;
+        player->armorpoints = saved_player->armorpoints;
+        player->armortype = saved_player->armortype;
+        player->backpack = saved_player->backpack;
+        player->readyweapon = saved_player->readyweapon;
+        player->pendingweapon = saved_player->pendingweapon;
 
-        player->health = player->healthOnLevelStart;
-        player->armorpoints = player->armorpointsOnLevelStart;
-        player->armortype = player->armortypeOnLevelStart;
-        player->backpack = player->backpackOnLevelStart;
-        player->readyweapon = player->readyweaponOnLevelStart;
-        player->pendingweapon = player->pendingweaponOnLevelStart;
-
-        for (i=0; i<NUMPOWERS; ++i)
+        for (k=0; k<NUMPOWERS; ++k)
         {
-            player->powers[i] = player->powersOnLevelStart[i];
+            player->powers[k] = saved_player->powers[k];
         }
 
-        for (i=0; i<NUMCARDS; ++i)
+        for (k=0; k<NUMCARDS; ++k)
         {
-            player->cards[i] = player->cardsOnLevelStart[i];
+            player->cards[k] = saved_player->cards[k];
         }
 
-        for (i=0; i<NUMWEAPONS; ++i)
+        for (k=0; k<NUMWEAPONS; ++k)
         {
-            player->weaponowned[i] = player->weaponownedOnLevelStart[i];
+            player->weaponowned[k] = saved_player->weaponowned[k];
         }
 
-        for (i=0; i<NUMAMMO; ++i)
+        for (k=0; k<NUMAMMO; ++k)
         {
-            player->ammo[i] = player->ammoOnLevelStart[i];
+            player->ammo[k] = saved_player->ammo[k];
         }
 
-        for (i=0; i<NUMAMMO; ++i)
+        for (k=0; k<NUMAMMO; ++k)
         {
-            player->maxammo[i] = player->maxammoOnLevelStart[i];
+            player->maxammo[k] = saved_player->maxammo[k];
         }
     }
 }
@@ -2636,11 +2652,6 @@ void G_DoNewGame (void)
     */
     consoleplayer = 0;
     G_InitNew (d_skill, d_episode, d_map); 
-
-    if ((coop_survival & SURVIVAL_REMEMBER_PLAYERS_DATA_BIT) != 0) // [crispy]
-    {
-        G_SavePlayersDataToMemory();
-    }
 
     gameaction = ga_nothing; 
 } 
@@ -2858,6 +2869,11 @@ G_InitNew
         }
         skytexturename = DEH_String(skytexturename);
         skytexture = R_TextureNumForName(skytexturename);
+    }
+
+    if ((coop_survival & SURVIVAL_REMEMBER_PLAYERS_DATA_BIT) != 0) // [crispy]
+    {
+        G_SavePlayersDataToMemory();
     }
 
     G_DoLoadLevel ();
