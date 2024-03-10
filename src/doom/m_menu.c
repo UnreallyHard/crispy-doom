@@ -2808,13 +2808,9 @@ boolean M_Responder (event_t* ev)
                 G_DoPlayDemo();
                 return true;
             }
-            else if (net_levelchange) // [crispy] allow netgame level reload
+            else if (net_levelchange)
             {
-                if (G_IsFirstActivePlayer(consoleplayer)) // [crispy] allow only for the first player
-                {
-                    send_reload_level = true;
-                    return true;
-                }
+                send_reload_level = true; 
             }
             else
             {
@@ -2831,13 +2827,9 @@ boolean M_Responder (event_t* ev)
                 G_DemoGotoNextLevel(true);
                 return true;
             }
-            else if (net_levelchange) // [crispy] allow netgame level change
+            else if (net_levelchange)
             {
-                if (G_IsFirstActivePlayer(consoleplayer)) // [crispy] allow only for the first player
-                {
-                    send_load_next_level = true; 
-                    return true;
-                }
+                send_load_next_level = true; 
             }
             else
             {
