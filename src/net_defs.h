@@ -210,13 +210,14 @@ typedef struct
 
     int num_players;
     int consoleplayer;
-    int mp_things_spawn_type; // [crispy]
     int coop_survival; // [crispy]
 
     // Hexen player classes:
 
     int player_classes[NET_MAXPLAYERS];
 
+    // [crispy] optional properties
+    int mp_things_spawn_type; 
 } net_gamesettings_t;
 
 #define NET_TICDIFF_FORWARD      (1 << 0)
