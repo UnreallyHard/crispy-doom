@@ -31,7 +31,6 @@
 #include "a11y.h" // [crispy] A11Y
 
 #include "s_sound.h" // [NS] Jump sound etc.
-#include "g_game.h" // [crispy] send_reload_level
 
 // Index of the special effects (INVUL inverse) map.
 #define INVERSECOLORMAP		32
@@ -260,18 +259,8 @@ void P_DeathThink (player_t* player)
     }
     else if (player->damagecount)
 	player->damagecount--;
-	
-    // if (netgame && coop_survival) // [crispy] CoopSurvival send_reload_level event on death
-    // {
-    //     if (G_IsFirstActivePlayer(consoleplayer))
-    //     {
-    //         send_reload_level = true;
-    //     }
 
-    //     player->playerstate = PST_REBORN;
-    // }
-
-    if (player->cmd.buttons & BT_USE && !(netgame && coop_survival)) // [crispy] Disable standard resurection in CoopSurvival
+    if (player->cmd.buttons & BT_USE && !(netgame && coop_survival)) // [crispy] Disable standard resurection in coop_survival
 	player->playerstate = PST_REBORN;
 }
 

@@ -191,7 +191,7 @@ P_GiveWeapon
 	
     if (netgame
 	&& deathmatch != 2
-    && !coop_survival // [crispy] Take weapons in CoopSurvival
+    && !coop_survival // [crispy] Take weapons in coop_survival
 	 && !dropped )
     {
 	// leave placed weapons forever on net games
@@ -357,11 +357,11 @@ P_GivePower
 // P_DropPlayerBackpack
 // [crispy] Drop player's backpack on the ground
 //
-void P_DropPlayerBackpack (mobj_t* playerMobj)
+void P_DropPlayerBackpack (mobj_t *playerMobj)
 {
     int i;
-    mobj_t*	mo;
-    player_t* player;
+    mobj_t *mo;
+    player_t *player;
 
     if (!playerMobj->player)
     {
@@ -385,7 +385,7 @@ void P_DropPlayerBackpack (mobj_t* playerMobj)
 // P_PickUpPlayerBackpack
 // [crispy] Pick up player's backpack
 //
-void P_PickUpPlayerBackpack (player_t* taker, player_t* giver)
+void P_PickUpPlayerBackpack (player_t *taker, player_t *giver)
 {
     int	i;
 
@@ -528,7 +528,7 @@ P_TouchSpecialThing
 	    player->message = DEH_String(GOTBLUECARD);
 	P_GiveCard (player, it_bluecard);
 	sound = sfx_keyup; // [NS] Optional key pickup sound.
-	if (!netgame || (netgame && coop_survival)) // [crispy] Take cards in SP and in CoopSurvival
+	if (!netgame || (netgame && coop_survival)) // [crispy] Take cards in SP and in coop_survival
 	    break;
 	return;
 	
@@ -710,7 +710,7 @@ P_TouchSpecialThing
 	break;
 	
       case SPR_BPAK:
-      // [crispy] CoopSurvival Get player's backpack
+      // [crispy] coop_survival Get player's backpack
       if (netgame && (coop_survival & SURVIVAL_CONTINUE_ON_ALLY_DEATH_BIT) != 0 && special->info->deadPlayerBackpackNumber)
         {
             P_PickUpPlayerBackpack(player, &players[special->info->deadPlayerBackpackNumber]);
@@ -864,13 +864,11 @@ P_KillMobj
 	    // switch view prior to dying
 	    AM_Stop ();
 	}
-	
-    }
-
-    // [crispy] CoopSurvival drop dead player's backpack
-    if (netgame && (coop_survival & SURVIVAL_CONTINUE_ON_ALLY_DEATH_BIT) != 0)
-    {
-        P_DropPlayerBackpack(target);
+	    // [crispy] coop_survival drop dead player's backpack
+        if (netgame && (coop_survival & SURVIVAL_CONTINUE_ON_ALLY_DEATH_BIT) != 0)
+        {
+            P_DropPlayerBackpack(target);
+        }
     }
 
     // [crispy] Lost Soul, Pain Elemental and Barrel explosions are translucent

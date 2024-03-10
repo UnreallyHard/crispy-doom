@@ -1263,12 +1263,16 @@ void G_Ticker (void)
 	if (playeringame[i] && players[i].playerstate == PST_REBORN) 
 	    G_DoReborn (i);
     
-    if ( // [crispy] CoopSurvival send_reload_level event
+    if ( // [crispy] coop_survival reload level on players death
         ((coop_survival & SURVIVAL_CONTINUE_ON_ALLY_DEATH_BIT) != 0 && G_AreAllPlayersDead()) ||
         ((coop_survival & SURVIVAL_CONTINUE_ON_ALLY_DEATH_BIT) == 0 && G_IsThereDeadPlayers())
     )
     {
-        send_reload_level = true;
+        G_InitNew (gameskill, gameepisode, gamemap);
+        if ((coop_survival & SURVIVAL_REMEMBER_PLAYERS_DATA_BIT) != 0)
+        {
+            G_LoadPlayersDataFromMemory();
+        }
     }
 
     // do things to change the game state
@@ -1436,10 +1440,6 @@ void G_Ticker (void)
             {
                 G_ClearSavename();
                 G_InitNew (gameskill, gameepisode, gamemap);
-                if ((coop_survival & SURVIVAL_REMEMBER_PLAYERS_DATA_BIT) != 0) // [crispy]
-                {
-                    G_LoadPlayersDataFromMemory();
-                }
             }
 		    break;
 
