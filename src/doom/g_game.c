@@ -1438,8 +1438,14 @@ void G_Ticker (void)
           case BTS_RELOAD_LEVEL: // [crispy]
             if (gamestate == GS_LEVEL)
             {
+                //gameaction = ga_loadlevel;
                 G_ClearSavename();
+
                 G_InitNew (gameskill, gameepisode, gamemap);
+                // for (i=0 ; i<MAXPLAYERS ; i++)
+                // {
+                //     players[i].playerstate = PST_REBORN;
+                // }
             }
 		    break;
 
