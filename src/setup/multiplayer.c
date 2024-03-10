@@ -136,6 +136,7 @@ static int strife_altdeath = 0;
 static int fast = 0;
 static int respawn = 0;
 static int mp_things_spawn_type = 0; // [crispy]
+static int allow_level_change = 0; // [crispy]
 static int coop_survival = 0; // [crispy]
 static int survival_remember_players_data = 0; // [crispy]
 static int survival_continue_on_ally_death = 0; // [crispy]
