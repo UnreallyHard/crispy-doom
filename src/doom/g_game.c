@@ -119,6 +119,8 @@ int             timelimit;
 boolean         paused; 
 boolean         sendpause;             	// send a pause event next tic 
 boolean         sendsave;             	// send a save event next tic 
+boolean         send_reload_level;      // [crispy] send a reload_level event next tic
+boolean         send_load_next_level;   // [crispy] send a load_next_level event next tic
 boolean         usergame;               // ok to save / end game 
  
 boolean         timingdemo;             // if true, exit with report on completion 
@@ -830,6 +832,20 @@ void G_BuildTiccmd (ticcmd_t* cmd, int maketic)
 	cmd->buttons = BT_SPECIAL | BTS_SAVEGAME | (savegameslot<<BTS_SAVESHIFT); 
     } 
 
+    // [crispy] load same level for net players
+    if (send_reload_level)
+    {
+        send_reload_level = false;
+        cmd->buttons = BT_SPECIAL | BTS_RELOAD_LEVEL;
+    }
+
+    // [crispy] load same level for net players
+    if (send_load_next_level)
+    {
+        send_load_next_level = false;
+        cmd->buttons = BT_SPECIAL | BTS_LOAD_NEXT_LEVEL;
+    }
+
     if (crispy->fliplevels)
     {
 	cmd->angleturn = -cmd->angleturn;
@@ -973,6 +989,7 @@ void G_DoLoadLevel (void)
     joyxmove = joyymove = joystrafemove = joylook = 0;
     mousex = mousex2 = mousey = 0;
     sendpause = sendsave = paused = false;
+    send_reload_level = send_load_next_level = false; // [crispy]
     memset(mousearray, 0, sizeof(mousearray));
     memset(joyarray, 0, sizeof(joyarray));
     R_SetGoobers(false);
@@ -1224,6 +1241,13 @@ static void G_CrispyScreenShot()
 	crispy->screenshotmsg = 2;
 }
 
+// [crispy] clear the "savename" variable,
+// i.e. restart level from scratch upon resurrection
+static inline void G_ClearSavename ()
+{
+    M_StringCopy(savename, "", sizeof(savename));
+}
+
 //
 // G_Ticker
 // Make ticcmd_ts for the players.
@@ -1233,6 +1257,7 @@ void G_Ticker (void)
     int		i;
     int		buf; 
     ticcmd_t*	cmd;
+    int epsd, map; // [crispy]
     
     // do player reborns if needed
     for (i=0 ; i<MAXPLAYERS ; i++) 
@@ -1409,6 +1434,23 @@ void G_Ticker (void)
 		    // (impossible to send save and pause specials within the same tic)
 		    if (demorecording && paused)
 			sendpause = true;
+		    break;
+            
+          case BTS_RELOAD_LEVEL: // [crispy]
+            if (gamestate == GS_LEVEL)
+            {
+                G_ClearSavename();
+                G_InitNew (gameskill, gameepisode, gamemap);
+            }
+		    break;
+
+          case BTS_LOAD_NEXT_LEVEL: // [crispy]
+            if (gamestate == GS_LEVEL)
+            {
+                G_ClearSavename();
+                G_GetNextLevel(&epsd, &map);
+                G_InitNew (gameskill, epsd, map);
+            }
 		    break; 
 		} 
 	    } 
@@ -1685,13 +1727,6 @@ void G_DeathMatchSpawnPlayer (int playernum)
     // no good spot, so the player will probably get stuck 
     P_SpawnPlayer (&playerstarts[playernum]); 
 } 
-
-// [crispy] clear the "savename" variable,
-// i.e. restart level from scratch upon resurrection
-static inline void G_ClearSavename ()
-{
-    M_StringCopy(savename, "", sizeof(savename));
-}
 
 //
 // G_DoReborn 
@@ -3628,6 +3663,28 @@ void G_DemoGotoNextLevel (boolean start)
         singletics = start;
     }
 } 
+
+//
+// G_IsFirstActivePlayer
+// [crispy] Check if player is the first player who still in the game
+//
+boolean G_IsFirstActivePlayer (int player_id)
+{
+    int i;
+
+    for (i=0 ; i<MAXPLAYERS; i++)
+    {
+        if (playeringame[i])
+        {
+            if (i == player_id)
+            {
+                return true;
+            }
+            return false;
+        }
+    }
+    return false;
+}
 
 //
 // G_IsThereDeadPlayers

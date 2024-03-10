@@ -68,6 +68,7 @@ void G_ExitLevel (void);
 void G_SecretExitLevel (void);
 
 void G_WorldDone (void);
+boolean G_IsFirstActivePlayer (int player_id); // [crispy]
 
 // Read current data from inputs and build a player movement command.
 
