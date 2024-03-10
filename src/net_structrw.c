@@ -81,7 +81,7 @@ void NET_WriteSettings(net_packet_t *packet, net_gamesettings_t *settings)
     NET_WriteInt8(packet, settings->random);
     NET_WriteInt8(packet, settings->num_players);
     NET_WriteInt8(packet, settings->consoleplayer);
-    NET_WriteInt8(packet, settings->coop_survival); // [crispy]
+    
 
     for (i = 0; i < settings->num_players; ++i)
     {
@@ -92,6 +92,10 @@ void NET_WriteSettings(net_packet_t *packet, net_gamesettings_t *settings)
     if (settings->mp_things_spawn_type)
     {
         NET_WriteInt8(packet, settings->mp_things_spawn_type); // [crispy]
+    }
+    if (settings->coop_survival)
+    {
+        NET_WriteInt8(packet, settings->coop_survival);
     }
 }
 
@@ -116,8 +120,7 @@ boolean NET_ReadSettings(net_packet_t *packet, net_gamesettings_t *settings)
            && NET_ReadSInt8(packet, (signed int *) &settings->loadgame)
            && NET_ReadInt8(packet, (unsigned int *) &settings->random)
            && NET_ReadInt8(packet, (unsigned int *) &settings->num_players)
-           && NET_ReadSInt8(packet, (signed int *) &settings->consoleplayer)
-           && NET_ReadInt8(packet, (unsigned int *) &settings->coop_survival); // [crispy]
+           && NET_ReadSInt8(packet, (signed int *) &settings->consoleplayer); 
 
     if (!success)
     {
@@ -135,6 +138,7 @@ boolean NET_ReadSettings(net_packet_t *packet, net_gamesettings_t *settings)
 
     // [crispy] optional properties
     NET_ReadInt8(packet, (unsigned int *) &settings->mp_things_spawn_type);
+    NET_ReadInt8(packet, (unsigned int *) &settings->coop_survival);
 
     return true;
 }

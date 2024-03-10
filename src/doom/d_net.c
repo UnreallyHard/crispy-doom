@@ -119,7 +119,6 @@ static void LoadGameSettings(net_gamesettings_t *settings)
     respawnparm = settings->respawn_monsters;
     timelimit = settings->timelimit;
     consoleplayer = settings->consoleplayer;
-    coop_survival = settings->coop_survival; // [crispy]
 
     if (lowres_turn)
     {
@@ -136,6 +135,10 @@ static void LoadGameSettings(net_gamesettings_t *settings)
     if (settings->mp_things_spawn_type)
     {
         mp_things_spawn_type = settings->mp_things_spawn_type;
+    }
+    if (settings->coop_survival)
+    {
+        coop_survival = settings->coop_survival;
     }
 }
 
@@ -157,7 +160,6 @@ static void SaveGameSettings(net_gamesettings_t *settings)
     settings->fast_monsters = fastparm;
     settings->respawn_monsters = respawnparm;
     settings->timelimit = timelimit;
-    settings->coop_survival = coop_survival; // [crispy]
 
     settings->lowres_turn = (M_ParmExists("-record")
                          && !M_ParmExists("-longtics"))
@@ -167,6 +169,10 @@ static void SaveGameSettings(net_gamesettings_t *settings)
     if (settings->mp_things_spawn_type)
     {
         settings->mp_things_spawn_type = mp_things_spawn_type;
+    }
+    if (settings->coop_survival)
+    {
+        settings->coop_survival = coop_survival;
     }
 }
 
