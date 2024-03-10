@@ -105,7 +105,7 @@ extern  boolean         respawnmonsters;
 // Netgame? Only true if >1 player.
 extern  boolean	netgame;
 
-// 0=Cooperative; 1=Deathmatch; 2=Altdeath
+// 0=Cooperative; 1=Deathmatch; 2=Altdeath; 3=dm3;
 extern int deathmatch;
 
 // -------------------------
