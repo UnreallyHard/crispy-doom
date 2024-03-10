@@ -3603,5 +3603,52 @@ void G_DemoGotoNextLevel (boolean start)
         singletics = start;
     }
 } 
+
+//
+// G_IsThereDeadPlayers
+// [crispy] Check if there is at least one dead player
+//
+boolean G_IsThereDeadPlayers (void)
+{
+    int i;
+
+    for (i=0 ; i<MAXPLAYERS; i++)
+    {
+        if (playeringame[i] && players[i].playerstate == PST_DEAD)
+        {
+            return true;
+        }
+    }
+
+    return false;
+}
+
+//
+// G_AreAllPlayersDead
+// [crispy] Check if all players are dead
+//
+boolean G_AreAllPlayersDead (void)
+{
+    int i;
+    int active_players;
+    int dead_players;
+
+    active_players = dead_players = 0;
+
+    for (i=0 ; i<MAXPLAYERS; i++)
+    {
+        if (playeringame[i])
+        {
+            active_players++;
+
+            if (players[i].playerstate == PST_DEAD)
+            {
+                dead_players++;
+            }
+        }
+    }
+
+    return active_players > 0 && active_players == dead_players;
+}
  
  
