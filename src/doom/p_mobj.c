@@ -1033,7 +1033,7 @@ void P_SpawnMapThing (mapthing_t* mthing)
     {
         return;
     }
-
+      
     if (gameskill == sk_baby)
 	bit = 1;
     else if (gameskill == sk_nightmare)

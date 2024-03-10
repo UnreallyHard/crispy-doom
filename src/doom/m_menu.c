@@ -2172,122 +2172,108 @@ static int G_ReloadLevel(void)
 
 static int G_GotoNextLevel(void)
 {
+  byte doom_next[6][9] = {
+    {12, 13, 19, 15, 16, 17, 18, 21, 14},
+    {22, 23, 24, 25, 29, 27, 28, 31, 26},
+    {32, 33, 34, 35, 36, 39, 38, 41, 37},
+    {42, 49, 44, 45, 46, 47, 48, 51, 43},
+    {52, 53, 54, 55, 56, 59, 58, 61, 57},
+    {62, 63, 69, 65, 66, 67, 68, 11, 64},
+  };
+  byte doom2_next[33] = {
+     2,  3,  4,  5,  6,  7,  8,  9, 10, 11,
+    12, 13, 14, 15, 31, 17, 18, 19, 20, 21,
+    22, 23, 24, 25, 26, 27, 28, 29, 30, 1,
+    32, 16, 3
+  };
+  byte nerve_next[9] = {
+    2, 3, 4, 9, 6, 7, 8, 1, 5
+  };
+
   int changed = false;
-  int epsd, map;
+
+    if (gamemode == commercial)
+    {
+      if (crispy->havemap33)
+        doom2_next[1] = 33;
+
+      if (W_CheckNumForName("map31") < 0)
+        doom2_next[14] = 16;
+
+      if (gamemission == pack_hacx)
+      {
+        doom2_next[30] = 16;
+        doom2_next[20] = 1;
+      }
+
+      if (gamemission == pack_master)
+      {
+        doom2_next[1] = 3;
+        doom2_next[14] = 16;
+        doom2_next[20] = 1;
+      }
+    }
+    else
+    {
+      if (gamemode == shareware)
+        doom_next[0][7] = 11;
+
+      if (gamemode == registered)
+        doom_next[2][7] = 11;
+
+      // [crispy] Sigil and Sigil II
+      if (!crispy->haved1e5 && !crispy->haved1e6)
+        doom_next[3][7] = 11;
+      else if (!crispy->haved1e5 && crispy->haved1e6)
+        doom_next[3][7] = 61;
+      else if (crispy->haved1e5 && !crispy->haved1e6)
+        doom_next[4][7] = 11;
+
+      if (gameversion == exe_chex)
+      {
+        doom_next[0][2] = 14;
+        doom_next[0][4] = 11;
+      }
+    }
 
   if (gamestate == GS_LEVEL)
   {
-    G_GetNextLevel(&epsd, &map);
+    int epsd, map;
+
+    if (gamemode == commercial)
+    {
+      epsd = gameepisode;
+      if (gamemission == pack_nerve)
+        map = nerve_next[gamemap-1];
+      else
+        map = doom2_next[gamemap-1];
+    }
+    else
+    {
+      epsd = doom_next[gameepisode-1][gamemap-1] / 10;
+      map = doom_next[gameepisode-1][gamemap-1] % 10;
+    }
+
+    // [crispy] special-casing for E1M10 "Sewers" support
+    if (crispy->havee1m10 && gameepisode == 1)
+    {
+	if (gamemap == 1)
+	{
+	    map = 10;
+	}
+	else
+	if (gamemap == 10)
+	{
+	    epsd = 1;
+	    map = 2;
+	}
+    }
 
     G_DeferedInitNew(gameskill, epsd, map);
     changed = true;
   }
 
   return changed;
-}
-
-void G_GetNextLevel(int *epsd, int *map)
-{
-    byte doom_next[6][9] = {
-        {12, 13, 19, 15, 16, 17, 18, 21, 14},
-        {22, 23, 24, 25, 29, 27, 28, 31, 26},
-        {32, 33, 34, 35, 36, 39, 38, 41, 37},
-        {42, 49, 44, 45, 46, 47, 48, 51, 43},
-        {52, 53, 54, 55, 56, 59, 58, 61, 57},
-        {62, 63, 69, 65, 66, 67, 68, 11, 64},
-    };
-    byte doom2_next[33] = {
-        2,  3,  4,  5,  6,  7,  8,  9, 10, 11,
-        12, 13, 14, 15, 31, 17, 18, 19, 20, 21,
-        22, 23, 24, 25, 26, 27, 28, 29, 30, 1,
-        32, 16, 3
-    };
-    byte nerve_next[9] = {
-        2, 3, 4, 9, 6, 7, 8, 1, 5
-    };
-
-    int t_epsd, t_map;
-
-    if (gamestate != GS_LEVEL)
-    {
-        return;
-    }
-
-    if (gamemode == commercial)
-    {
-        if (crispy->havemap33)
-            doom2_next[1] = 33;
-
-        if (W_CheckNumForName("map31") < 0)
-            doom2_next[14] = 16;
-
-        if (gamemission == pack_hacx)
-        {
-            doom2_next[30] = 16;
-            doom2_next[20] = 1;
-        }
-
-        if (gamemission == pack_master)
-        {
-            doom2_next[1] = 3;
-            doom2_next[14] = 16;
-            doom2_next[20] = 1;
-        }
-    }
-    else
-    {
-        if (gamemode == shareware)
-            doom_next[0][7] = 11;
-
-        if (gamemode == registered)
-            doom_next[2][7] = 11;
-
-        // [crispy] Sigil and Sigil II
-        if (!crispy->haved1e5 && !crispy->haved1e6)
-            doom_next[3][7] = 11;
-        else if (!crispy->haved1e5 && crispy->haved1e6)
-            doom_next[3][7] = 61;
-        else if (crispy->haved1e5 && !crispy->haved1e6)
-            doom_next[4][7] = 11;
-
-        if (gameversion == exe_chex)
-        {
-            doom_next[0][2] = 14;
-            doom_next[0][4] = 11;
-        }
-    }
-
-    if (gamemode == commercial)
-    {
-        t_epsd = gameepisode;
-        if (gamemission == pack_nerve)
-        t_map = nerve_next[gamemap-1];
-        else
-        t_map = doom2_next[gamemap-1];
-    }
-    else
-    {
-        t_epsd = doom_next[gameepisode-1][gamemap-1] / 10;
-        t_map = doom_next[gameepisode-1][gamemap-1] % 10;
-    }
-
-    // [crispy] special-casing for E1M10 "Sewers" support
-    if (crispy->havee1m10 && gameepisode == 1)
-    {
-        if (gamemap == 1)
-        {
-            t_map = 10;
-        }
-        else
-        if (gamemap == 10)
-        {
-            t_epsd = 1;
-            t_map = 2;
-        }
-    }
-
-    *epsd = t_epsd;
-    *map = t_map;
 }
 
 //
@@ -2792,61 +2778,42 @@ boolean M_Responder (event_t* ev)
             }
 #endif
 	    return true;
-	    }
+	}
         // [crispy] those two can be considered as shortcuts for the IDCLEV cheat
         // and should be treated as such, i.e. add "if (!netgame)"
         // hovewer, allow while multiplayer demos
-        else if ((!netgame || netdemo || net_levelchange) && key != 0 && key == key_menu_reloadlevel)
+        else if ((!netgame || netdemo) && key != 0 && key == key_menu_reloadlevel)
         {
-            if (demoplayback)         
-            {
-                if (crispy->demowarp)
-                {
-                    // [crispy] enable screen render back before replaying
-                    nodrawers = false;
-                    singletics = false;
-                }
-                // [crispy] replay demo lump or file
-                G_DoPlayDemo();
-                return true;
-            }
-            else if (net_levelchange) // [crispy] allow netgame level reload
-            {
-                if (G_IsFirstActivePlayer(consoleplayer)) // [crispy] allow only for the first player
-                {
-                    send_reload_level = true;
-                    return true;
-                }
-            }
-            else
-            {
-                if (G_ReloadLevel())
-                    return true;
-            }
+	    if (demoplayback)         
+	    {
+		if (crispy->demowarp)
+		{
+		// [crispy] enable screen render back before replaying
+		nodrawers = false;
+		singletics = false;
+		}
+		// [crispy] replay demo lump or file
+		G_DoPlayDemo();
+		return true;
+	    }
+	    else
+	    if (G_ReloadLevel())
+		return true;
         }
-        else if ((!netgame || netdemo || net_levelchange) && key != 0 && key == key_menu_nextlevel)
+        else if ((!netgame || netdemo) && key != 0 && key == key_menu_nextlevel)
         {
-            if (demoplayback)
-            {
-                // [crispy] go to next level
-                demo_gotonextlvl = true;
-                G_DemoGotoNextLevel(true);
-                return true;
-            }
-            else if (net_levelchange) // [crispy] allow netgame level change
-            {
-                if (G_IsFirstActivePlayer(consoleplayer)) // [crispy] allow only for the first player
-                {
-                    send_load_next_level = true; 
-                    return true;
-                }
-            }
-            else
-            {
-                if (G_GotoNextLevel())
-                    return true;
-            }
+	    if (demoplayback)
+	    {
+		// [crispy] go to next level
+		demo_gotonextlvl = true;
+		G_DemoGotoNextLevel(true);
+		return true;
+	    }
+	    else
+	    if (G_GotoNextLevel())
+		return true;
         }
+
     }
 
     // Pop-up menu?

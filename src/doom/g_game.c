@@ -96,6 +96,10 @@ void	G_DoVictory (void);
 void	G_DoWorldDone (void); 
 void	G_DoSaveGame (void); 
 void    G_AutoSaveGame(void); // [crispy]
+void    G_SavePlayersDataToMemory(void); // [crispy]
+void    G_LoadPlayersDataFromMemory(void); // [crispy]
+boolean G_IsThereDeadPlayers (void); // [crispy]
+boolean G_AreAllPlayersDead (void); // [crispy] 
  
 // Gamestate the last time G_Ticker was called.
 
@@ -115,8 +119,6 @@ int             timelimit;
 boolean         paused; 
 boolean         sendpause;             	// send a pause event next tic 
 boolean         sendsave;             	// send a save event next tic 
-boolean         send_reload_level;      // [crispy] send a reload_level event next tic
-boolean         send_load_next_level;   // [crispy] send a load_next_level event next tic 
 boolean         usergame;               // ok to save / end game 
  
 boolean         timingdemo;             // if true, exit with report on completion 
@@ -251,6 +253,8 @@ int             vanilla_demo_limit = 1;
 // [crispy] store last cmd to track joins
 static ticcmd_t* last_cmd = NULL;
  
+saved_player_t  saved_players[MAXPLAYERS]; // [crispy]
+
 int G_CmdChecksum (ticcmd_t* cmd) 
 { 
     size_t		i;
@@ -826,20 +830,6 @@ void G_BuildTiccmd (ticcmd_t* cmd, int maketic)
 	cmd->buttons = BT_SPECIAL | BTS_SAVEGAME | (savegameslot<<BTS_SAVESHIFT); 
     } 
 
-    // [crispy] load same level for net players
-    if (send_reload_level)
-    {
-        send_reload_level = false;
-        cmd->buttons = BT_SPECIAL | BTS_RELOAD_LEVEL;
-    }
-
-    // [crispy] load same level for net players
-    if (send_load_next_level)
-    {
-        send_load_next_level = false;
-        cmd->buttons = BT_SPECIAL | BTS_LOAD_NEXT_LEVEL;
-    }
-
     if (crispy->fliplevels)
     {
 	cmd->angleturn = -cmd->angleturn;
@@ -983,7 +973,6 @@ void G_DoLoadLevel (void)
     joyxmove = joyymove = joystrafemove = joylook = 0;
     mousex = mousex2 = mousey = 0;
     sendpause = sendsave = paused = false;
-    send_reload_level = send_load_next_level = false; // [crispy]
     memset(mousearray, 0, sizeof(mousearray));
     memset(joyarray, 0, sizeof(joyarray));
     R_SetGoobers(false);
@@ -1235,13 +1224,6 @@ static void G_CrispyScreenShot()
 	crispy->screenshotmsg = 2;
 }
 
-// [crispy] clear the "savename" variable,
-// i.e. restart level from scratch upon resurrection
-static inline void G_ClearSavename ()
-{
-    M_StringCopy(savename, "", sizeof(savename));
-}
-
 //
 // G_Ticker
 // Make ticcmd_ts for the players.
@@ -1251,13 +1233,24 @@ void G_Ticker (void)
     int		i;
     int		buf; 
     ticcmd_t*	cmd;
-    int epsd, map; // [crispy]
     
     // do player reborns if needed
     for (i=0 ; i<MAXPLAYERS ; i++) 
 	if (playeringame[i] && players[i].playerstate == PST_REBORN) 
 	    G_DoReborn (i);
     
+    if ( // [crispy] coop_survival reload level on players death
+        ((coop_survival & SURVIVAL_CONTINUE_ON_ALLY_DEATH_BIT) != 0 && G_AreAllPlayersDead()) ||
+        ((coop_survival & SURVIVAL_CONTINUE_ON_ALLY_DEATH_BIT) == 0 && G_IsThereDeadPlayers())
+    )
+    {
+        G_InitNew (gameskill, gameepisode, gamemap);
+        if ((coop_survival & SURVIVAL_REMEMBER_PLAYERS_DATA_BIT) != 0)
+        {
+            G_LoadPlayersDataFromMemory();
+        }
+    }
+
     // do things to change the game state
     while (gameaction != ga_nothing) 
     { 
@@ -1417,23 +1410,6 @@ void G_Ticker (void)
 		    if (demorecording && paused)
 			sendpause = true;
 		    break; 
-
-          case BTS_RELOAD_LEVEL: // [crispy]
-            if (gamestate == GS_LEVEL)
-            {
-                G_ClearSavename();
-                G_InitNew (gameskill, gameepisode, gamemap);
-            }
-		    break;
-
-          case BTS_LOAD_NEXT_LEVEL: // [crispy]
-            if (gamestate == GS_LEVEL)
-            {
-                G_ClearSavename();
-                G_GetNextLevel(&epsd, &map);
-                G_InitNew (gameskill, epsd, map);
-            }
-		    break;
 		} 
 	    } 
 	}
@@ -1709,6 +1685,13 @@ void G_DeathMatchSpawnPlayer (int playernum)
     // no good spot, so the player will probably get stuck 
     P_SpawnPlayer (&playerstarts[playernum]); 
 } 
+
+// [crispy] clear the "savename" variable,
+// i.e. restart level from scratch upon resurrection
+static inline void G_ClearSavename ()
+{
+    M_StringCopy(savename, "", sizeof(savename));
+}
 
 //
 // G_DoReborn 
@@ -2246,6 +2229,12 @@ void G_DoWorldDone (void)
     gamemap = wminfo.next+1; 
     G_DoLoadLevel (); 
     G_AutoSaveGame();  // [crispy]
+
+    if ((coop_survival & SURVIVAL_REMEMBER_PLAYERS_DATA_BIT) != 0) // [crispy]
+    {
+        G_SavePlayersDataToMemory();
+    }
+
     gameaction = ga_nothing; 
     viewactive = true; 
 } 
@@ -2491,6 +2480,122 @@ void G_DoSaveGame (void)
     R_FillBackScreen ();
 }
  
+
+//
+// G_SavePlayersDataToMemory
+// [crispy] Saves extended OnLevelStart players' data
+// 
+void G_SavePlayersDataToMemory(void)
+{
+    int	i;
+    int k;
+	player_t *player;
+    saved_player_t *saved_player;
+
+    for (i=0 ; i<MAXPLAYERS ; i++)
+    {
+        if (!playeringame[i])
+        {
+            continue;
+        }
+
+        player = (&players[i]);
+        saved_player = (&saved_players[i]);
+
+        saved_player->health = player->health;
+        saved_player->armorpoints = player->armorpoints;
+        saved_player->armortype = player->armortype;
+        saved_player->backpack = player->backpack;
+        saved_player->readyweapon = player->readyweapon;
+        saved_player->pendingweapon = player->pendingweapon;
+
+        for (k=0; k<NUMPOWERS; ++k)
+        {
+            saved_player->powers[k] = player->powers[k];
+        }
+
+        for (k=0; k<NUMCARDS; ++k)
+        {
+            saved_player->cards[k] = player->cards[k];
+        }
+
+        for (k=0; k<NUMWEAPONS; ++k)
+        {
+            saved_player->weaponowned[k] = player->weaponowned[k];
+        }
+
+        for (k=0; k<NUMAMMO; ++k)
+        {
+            saved_player->ammo[k] = player->ammo[k];
+        }
+
+        for (k=0; k<NUMAMMO; ++k)
+        {
+            saved_player->maxammo[k] = player->maxammo[k];
+        }
+    }
+}
+
+//
+// G_LoadPlayersDataFromMemory
+// [crispy] Loads extended OnLevelStart players' data
+//
+void G_LoadPlayersDataFromMemory(void)
+{
+    int	i;
+    int k;
+	player_t *player;
+    saved_player_t *saved_player;
+
+    for (i=0 ; i<MAXPLAYERS ; i++)
+    {
+        if (!playeringame[i])
+        {
+            continue;
+        }
+        
+        player = &players[i];
+        saved_player = &saved_players[i];
+
+        if (saved_player->health <= 0)
+        {
+            continue;
+        }
+
+        player->usedown = player->attackdown = true;
+        player->health = saved_player->health;
+        player->armorpoints = saved_player->armorpoints;
+        player->armortype = saved_player->armortype;
+        player->backpack = saved_player->backpack;
+        player->readyweapon = saved_player->readyweapon;
+        player->pendingweapon = saved_player->pendingweapon;
+
+        for (k=0; k<NUMPOWERS; ++k)
+        {
+            player->powers[k] = saved_player->powers[k];
+        }
+
+        for (k=0; k<NUMCARDS; ++k)
+        {
+            player->cards[k] = saved_player->cards[k];
+        }
+
+        for (k=0; k<NUMWEAPONS; ++k)
+        {
+            player->weaponowned[k] = saved_player->weaponowned[k];
+        }
+
+        for (k=0; k<NUMAMMO; ++k)
+        {
+            player->ammo[k] = saved_player->ammo[k];
+        }
+
+        for (k=0; k<NUMAMMO; ++k)
+        {
+            player->maxammo[k] = saved_player->maxammo[k];
+        }
+    }
+}
 
 //
 // G_InitNew
@@ -3523,25 +3628,52 @@ void G_DemoGotoNextLevel (boolean start)
         singletics = start;
     }
 } 
- 
+
 //
-// G_IsFirstActivePlayer
-// [crispy] Check if player is the first player who still in the game
+// G_IsThereDeadPlayers
+// [crispy] Check if there is at least one dead player
 //
-boolean G_IsFirstActivePlayer (int player_id)
+boolean G_IsThereDeadPlayers (void)
 {
     int i;
 
     for (i=0 ; i<MAXPLAYERS; i++)
     {
-        if (playeringame[i])
+        if (playeringame[i] && players[i].playerstate == PST_DEAD)
         {
-            if (i == player_id)
-            {
-                return true;
-            }
-            return false;
+            return true;
         }
     }
+
     return false;
 }
+
+//
+// G_AreAllPlayersDead
+// [crispy] Check if all players are dead
+//
+boolean G_AreAllPlayersDead (void)
+{
+    int i;
+    int active_players;
+    int dead_players;
+
+    active_players = dead_players = 0;
+
+    for (i=0 ; i<MAXPLAYERS; i++)
+    {
+        if (playeringame[i])
+        {
+            active_players++;
+
+            if (players[i].playerstate == PST_DEAD)
+            {
+                dead_players++;
+            }
+        }
+    }
+
+    return active_players > 0 && active_players == dead_players;
+}
+ 
+ 

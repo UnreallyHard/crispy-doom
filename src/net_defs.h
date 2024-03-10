@@ -211,6 +211,7 @@ typedef struct
     int num_players;
     int consoleplayer;
     int mp_things_spawn_type; // [crispy]
+    int coop_survival; // [crispy]
 
     // Hexen player classes:
 

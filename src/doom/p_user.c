@@ -32,7 +32,6 @@
 
 #include "s_sound.h" // [NS] Jump sound etc.
 
-
 // Index of the special effects (INVUL inverse) map.
 #define INVERSECOLORMAP		32
 
@@ -260,9 +259,8 @@ void P_DeathThink (player_t* player)
     }
     else if (player->damagecount)
 	player->damagecount--;
-	
 
-    if (player->cmd.buttons & BT_USE)
+    if (player->cmd.buttons & BT_USE && !(netgame && coop_survival)) // [crispy] Disable standard resurection in coop_survival
 	player->playerstate = PST_REBORN;
 }
 

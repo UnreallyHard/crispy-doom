@@ -49,7 +49,7 @@ extern  boolean	respawnparm;	// checkparm of -respawn
 extern  boolean	fastparm;	// checkparm of -fast
 extern  boolean	coop_spawns;	// [crispy] checkparm of -coop_spawns
 extern  int     mp_things_spawn_type; // [crispy] checkparm of -mpspawntype
-extern  boolean net_levelchange; // [crispy] checkparm of -netlevelchange
+extern  int     coop_survival; // [crispy] checkparm of -coopsurvival
 
 extern  boolean	devparm;	// DEBUG: launched with -devparm
 

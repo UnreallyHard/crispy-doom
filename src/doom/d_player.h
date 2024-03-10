@@ -195,6 +195,24 @@ typedef struct player_s
     int			btuse, btuse_tics;
 } player_t;
 
+//
+// Saved player properties: saved_player_s
+//
+typedef struct saved_player_s
+{
+    int			    health;
+    int			    armorpoints;
+    int			    armortype;
+    int			    powers[NUMPOWERS + 3];
+    boolean		    cards[NUMCARDS];
+    boolean		    backpack;
+    weapontype_t  	readyweapon;
+    weapontype_t	pendingweapon;
+    int             weaponowned[NUMWEAPONS];
+    int			    ammo[NUMAMMO];
+    int			    maxammo[NUMAMMO];
+} saved_player_t;
+
 
 //
 // INTERMISSION
