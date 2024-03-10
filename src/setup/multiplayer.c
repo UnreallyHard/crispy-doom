@@ -295,6 +295,11 @@ static void StartGame(int multiplayer)
             AddCmdLineParameter(exec, "-mpspawntype %i", mp_things_spawn_type);
         }
 
+        if (allow_level_change) // [crispy]
+        {   
+            AddCmdLineParameter(exec, "-netlevelchange");
+        }
+
         if (!deathmatch && coop_survival) // [crispy]: Coop Survival mode
         {
             if (survival_remember_players_data) // [crispy]
@@ -751,6 +756,7 @@ static void MultiplayerFlags(void) // [crispy]
         TXT_NewRadioButton("Only monsters", &mp_things_spawn_type, MP_THINGS_SPAWN_ONLY_MONSTERS),
         TXT_NewRadioButton("None", &mp_things_spawn_type, MP_THINGS_SPAWN_NONE),
         TXT_NewSeparator("Functions"),
+        TXT_NewCheckBox("Allow Level Reload/Change", &allow_level_change),
         NULL
     );
 
