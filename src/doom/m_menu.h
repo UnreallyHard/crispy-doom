@@ -54,9 +54,6 @@ void M_StartControlPanel (void);
 // [crispy] Propagate default difficulty setting change
 void M_SetDefaultDifficulty (void);
 
-// [crispy] Hets next episode and map
-void G_GetNextLevel (int *epsd, int *map);
-
 extern int detailLevel;
 extern int screenblocks;
 

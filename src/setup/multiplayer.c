@@ -134,7 +134,6 @@ static int strife_altdeath = 0;
 static int fast = 0;
 static int respawn = 0;
 static int mp_things_spawn_type = 0;  // [crispy]
-static int allow_level_change = 0;  // [crispy]
 static int coop_survival = 0; // [crispy]
 static int survival_remember_players_data = 0; // [crispy]
 static int survival_continue_on_ally_death = 0; // [crispy]
@@ -291,11 +290,6 @@ static void StartGame(int multiplayer)
         if (mp_things_spawn_type) // [crispy]
         {   
             AddCmdLineParameter(exec, "-mpspawntype %i", mp_things_spawn_type);
-        }
-
-        if (allow_level_change) // [crispy]
-        {   
-            AddCmdLineParameter(exec, "-netlevelchange");
         }
 
         if (!deathmatch && coop_survival) // [crispy]: Coop Survival mode
@@ -754,7 +748,6 @@ static void MultiplayerFlags(void) // [crispy]
         TXT_NewRadioButton("Only monsters", &mp_things_spawn_type, MP_THINGS_SPAWN_ONLY_MONSTERS),
         TXT_NewRadioButton("None", &mp_things_spawn_type, MP_THINGS_SPAWN_NONE),
         TXT_NewSeparator("Functions"),
-        TXT_NewCheckBox("Allow Level Reload/Change", &allow_level_change),
         NULL
     );
 
@@ -841,15 +834,6 @@ static void StartGameMenu(const char *window_title, int multiplayer)
                                TXT_NewLabel("minutes"),
                                NULL),
                NULL);
-        if (gamemission == doom)  // [crispy] Multiplayer Flags
-        {
-            TXT_AddWidgets(window,
-                TXT_NewLabel("Flags"),
-                TXT_NewButton2("Set",
-                    (TxtWidgetSignalFunc) MultiplayerFlags, NULL),
-                NULL
-            );
-        }
     }
 
     TXT_AddWidgets(window,
