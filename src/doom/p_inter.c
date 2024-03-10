@@ -378,7 +378,8 @@ void P_DropPlayerBackpack (mobj_t *playerMobj)
 
     mo = P_SpawnMobj(playerMobj->x, playerMobj->y, ONFLOORZ, MT_MISC24);
     mo->flags |= MF_PICKUP | MF_SPECIAL;
-    mo->info->deadPlayerBackpackNumber = i;
+    mo->is_player_backpack = 1;
+    mo->player_backpack_num = i;
 }
 
 //
@@ -711,13 +712,14 @@ P_TouchSpecialThing
 	
       case SPR_BPAK:
       // [crispy] coop_survival Get player's backpack
-      if (netgame && (coop_survival & SURVIVAL_CONTINUE_ON_ALLY_DEATH_BIT) != 0 && special->info->deadPlayerBackpackNumber)
+      if (netgame && (coop_survival & SURVIVAL_CONTINUE_ON_ALLY_DEATH_BIT) != 0 && special->is_player_backpack)
         {
-            P_PickUpPlayerBackpack(player, &players[special->info->deadPlayerBackpackNumber]);
+            P_PickUpPlayerBackpack(player, &players[special->player_backpack_num]);
             sound = sfx_wpnup;
             player->message = DEH_String(GOTBACKPACK);
+            break;
         }
-        break;
+
 	if (!player->backpack)
 	{
 	    for (i=0 ; i<NUMAMMO ; i++)

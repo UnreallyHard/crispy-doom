@@ -297,6 +297,11 @@ typedef struct mobj_s
     fixed_t		oldz;
     angle_t		oldangle;
 
+    // [crispy] Coop Survival is this player's backpack
+    int is_player_backpack;
+    // [crispy] Coop Survival dead player's backpack number
+    int player_backpack_num;
+
 } mobj_t;
 
 typedef enum // [crispy]
