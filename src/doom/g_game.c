@@ -2539,6 +2539,7 @@ void G_LoadPlayersDataFromMemory(void)
 
         player->usedown = player->attackdown = true;
         player->health = saved_player->health;
+        player->mo->health = saved_player->health;
         player->armorpoints = saved_player->armorpoints;
         player->armortype = saved_player->armortype;
         player->backpack = saved_player->backpack;
