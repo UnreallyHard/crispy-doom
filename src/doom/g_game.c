@@ -1264,15 +1264,18 @@ void G_Ticker (void)
 	if (playeringame[i] && players[i].playerstate == PST_REBORN) 
 	    G_DoReborn (i);
     
-    if ( // [crispy] coop_survival reload level on players death
-        ((coop_survival & SURVIVAL_CONTINUE_ON_ALLY_DEATH_BIT) != 0 && G_AreAllPlayersDead()) ||
-        ((coop_survival & SURVIVAL_CONTINUE_ON_ALLY_DEATH_BIT) == 0 && G_IsThereDeadPlayers())
-    )
-    {
-        G_InitNew (gameskill, gameepisode, gamemap);
-        if ((coop_survival & SURVIVAL_REMEMBER_PLAYERS_DATA_BIT) != 0)
+    if (netgame && coop_survival) // [crispy] coop_survival reload level on players death
+    { 
+        if ( // [crispy] coop_survival reload level on players death
+            ((coop_survival & SURVIVAL_CONTINUE_ON_ALLY_DEATH_BIT) != 0 && G_AreAllPlayersDead()) ||
+            ((coop_survival & SURVIVAL_CONTINUE_ON_ALLY_DEATH_BIT) == 0 && G_IsThereDeadPlayers())
+        )
         {
-            G_LoadPlayersDataFromMemory();
+            G_InitNew (gameskill, gameepisode, gamemap);
+            if ((coop_survival & SURVIVAL_REMEMBER_PLAYERS_DATA_BIT) != 0)
+            {
+                G_LoadPlayersDataFromMemory();
+            }
         }
     }
 
@@ -2265,7 +2268,7 @@ void G_DoWorldDone (void)
     G_DoLoadLevel (); 
     G_AutoSaveGame();  // [crispy]
 
-    if ((coop_survival & SURVIVAL_REMEMBER_PLAYERS_DATA_BIT) != 0) // [crispy]
+    if (netgame && (coop_survival & SURVIVAL_REMEMBER_PLAYERS_DATA_BIT) != 0) // [crispy]
     {
         G_SavePlayersDataToMemory();
     }
