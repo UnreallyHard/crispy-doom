@@ -95,6 +95,7 @@ void	G_DoCompleted (void);
 void	G_DoVictory (void); 
 void	G_DoWorldDone (void); 
 void	G_DoSaveGame (void); 
+void    G_AutoSaveGame(void); // [crispy]
  
 // Gamestate the last time G_Ticker was called.
 
@@ -2200,11 +2201,16 @@ void G_WorldDone (void)
     }
 } 
  
+//
+// G_DoWorldDone
+// On map done
+//  
 void G_DoWorldDone (void) 
 {        
     gamestate = GS_LEVEL; 
     gamemap = wminfo.next+1; 
     G_DoLoadLevel (); 
+    G_AutoSaveGame();  // [crispy]
     gameaction = ga_nothing; 
     viewactive = true; 
 } 
@@ -2333,6 +2339,25 @@ G_SaveGame
 {
     savegameslot = slot;
     M_StringCopy(savedescription, description, sizeof(savedescription));
+    sendsave = true;
+}
+
+// [crispy] Autosave feature
+void G_AutoSaveGame(void) 
+{
+    int zero_autosaveslot;
+
+    if (crispy->autosaveslot < 1 || crispy->autosaveslot > (SAVEPAGE_MAX + 1) * SAVES_PER_PAGE)
+    {
+        return;
+    }
+
+    zero_autosaveslot = crispy->autosaveslot - 1;
+
+    savepage = zero_autosaveslot / (SAVES_PER_PAGE);
+    savegameslot = zero_autosaveslot - (savepage * SAVES_PER_PAGE);
+
+    M_StringCopy(savedescription, "AutoSave", sizeof(savedescription));
     sendsave = true;
 }
 
@@ -2486,6 +2511,7 @@ void G_DoNewGame (void)
     */
     consoleplayer = 0;
     G_InitNew (d_skill, d_episode, d_map); 
+    G_AutoSaveGame(); // [crispy]
     gameaction = ga_nothing; 
 } 
 

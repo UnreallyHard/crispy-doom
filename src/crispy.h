@@ -41,6 +41,7 @@ typedef struct
 	int automapoverlay;
 	int automaprotate;
 	int automapstats;
+    int autosaveslot;
 	int bobfactor;
 	int brightmaps;
 	int btusetimer;

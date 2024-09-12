@@ -150,7 +150,6 @@ char			savegamestrings[10][SAVESTRINGSIZE];
 
 // [FG] support up to 8 pages of savegames
 int savepage = 0;
-static const int savepage_max = 7;
 
 char	endstring[160];
 
@@ -580,6 +579,7 @@ enum
     crispness_pitch,
     crispness_neghealth,
     crispness_defaultskill,
+    crispness_autosaveslot,
     crispness_sep_tactical_,
 
     crispness_sep_crosshair,
@@ -604,6 +604,7 @@ static menuitem_t Crispness3Menu[]=
     {3,"",	M_CrispyTogglePitch,'w'},
     {3,"",	M_CrispyToggleNeghealth,'n'},
     {3,"",	M_CrispyToggleDefaultSkill,'d'},
+    {4,"",	M_CrispyToggleAutosave,'f'},
     {-1,"",0,'\0'},
     {-1,"",0,'\0'},
     {3,"",	M_CrispyToggleCrosshair,'d'},
@@ -865,10 +866,10 @@ void M_DrawSaveLoadBottomLine(void)
 
   if (savepage > 0)
     M_WriteText(LoadDef.x, y, "< PGUP");
-  if (savepage < savepage_max)
+  if (savepage < SAVEPAGE_MAX)
     M_WriteText(LoadDef.x+(SAVESTRINGSIZE-6)*8, y, "PGDN >");
 
-  M_snprintf(pagestr, sizeof(pagestr), "page %d/%d", savepage + 1, savepage_max + 1);
+  M_snprintf(pagestr, sizeof(pagestr), "page %d/%d", savepage + 1, SAVEPAGE_MAX + 1);
   M_WriteText(ORIGWIDTH/2-M_StringWidth(pagestr)/2, y, pagestr);
 
   dp_translation = NULL;
@@ -1609,6 +1610,7 @@ static void M_DrawCrispness3(void)
     M_DrawCrispnessItem(crispness_pitch, "Weapon Recoil Pitch", crispy->pitch, true);
     M_DrawCrispnessItem(crispness_neghealth, "Negative Player Health", crispy->neghealth, true);
     M_DrawCrispnessMultiItem(crispness_defaultskill, "Default Difficulty", multiitem_difficulties, crispy->defaultskill, true);
+    M_DrawCrispnessNumericItem(crispness_autosaveslot, "Autosave Slot", crispy->autosaveslot, "None", true, "None");
 
     M_DrawCrispnessSeparator(crispness_sep_crosshair, "Crosshair");
 
@@ -3015,7 +3017,7 @@ boolean M_Responder (event_t* ev)
 	}
 	else if (currentMenu == &LoadDef || currentMenu == &SaveDef)
 	{
-	    if (savepage < savepage_max)
+	    if (savepage < SAVEPAGE_MAX)
 	    {
 		savepage++;
 		quickSaveSlot = -1;
