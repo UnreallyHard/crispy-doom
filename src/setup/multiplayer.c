@@ -129,16 +129,16 @@ static char *chat_macros[10];
 static char *wads[NUM_WADS];
 static char *extra_params[NUM_EXTRA_PARAMS];
 static int character_class = 0;
-static int skill = 2;
+static int skill = 3;
 static int nomonsters = 0;
 static int deathmatch = 0;
 static int strife_altdeath = 0;
 static int fast = 0;
 static int respawn = 0;
-static int mp_things_spawn_type = 0; // [crispy]
-static int allow_level_change = 0; // [crispy]
-static int coop_survival = 0; // [crispy]
-static int survival_remember_players_data = 0; // [crispy]
+static int mp_things_spawn_type = MP_THINGS_SPAWN_ONLY_MONSTERS; // [crispy]
+static int allow_level_change = 1; // [crispy]
+static int coop_survival = 1; // [crispy]
+static int survival_remember_players_data = 1; // [crispy]
 static int survival_continue_on_ally_death = 0; // [crispy]
 static int udpport = 2342;
 static int timer = 0;
