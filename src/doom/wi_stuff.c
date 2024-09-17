@@ -1412,7 +1412,6 @@ void WI_drawNetgameStats(void)
     if (crispy->infightingkills && cnt_infightingkills > 0)
     {
         x = NG_STATSX;
-        V_DrawPatchFlipped(x-SHORT(splat[0]->width-13), y+13, splat[0]);
         x += NG_SPACINGX;
         WI_drawPercent(x-pwidth, y+10, cnt_infightingkills);	
         x += NG_SPACINGX;
