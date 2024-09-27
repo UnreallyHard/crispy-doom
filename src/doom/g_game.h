@@ -69,6 +69,7 @@ void G_SecretExitLevel (void);
 
 void G_WorldDone (void);
 
+boolean G_IsFirstActivePlayer (int player_id); // [crispy]
 // Read current data from inputs and build a player movement command.
 
 void G_BuildTiccmd (ticcmd_t *cmd, int maketic); 
@@ -88,7 +89,8 @@ extern fixed_t forwardmove[2];
 extern fixed_t sidemove[2];
 
 extern boolean sendpause;
-
+extern boolean send_reload_level; // [crispy]
+extern boolean send_load_next_level; // [crispy]
 
 #endif
 

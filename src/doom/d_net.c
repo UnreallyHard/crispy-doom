@@ -130,6 +130,12 @@ static void LoadGameSettings(net_gamesettings_t *settings)
     {
         playeringame[i] = i < settings->num_players;
     }
+
+    // [crispy] optional properties
+    if (settings->mp_things_spawn_type)
+    {
+        mp_things_spawn_type = settings->mp_things_spawn_type;
+    }
 }
 
 // Save the game settings from global variables to the specified
@@ -154,6 +160,12 @@ static void SaveGameSettings(net_gamesettings_t *settings)
     settings->lowres_turn = (M_ParmExists("-record")
                          && !M_ParmExists("-longtics"))
                           || M_ParmExists("-shorttics");
+
+    // [crispy] optional properties
+    if (settings->mp_things_spawn_type)
+    {
+        settings->mp_things_spawn_type = mp_things_spawn_type;
+    }
 }
 
 static void InitConnectData(net_connect_data_t *connect_data)
